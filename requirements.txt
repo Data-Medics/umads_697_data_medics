@@ -1,0 +1,17 @@
+pandas
+numpy
+seaborn
+matplotlib
+ipython
+jupyter
+ipykernel
+scikit-learn
+PyYAML
+ploomber
+altair
+nltk
+textstat
+spacy
+tensorflow
+keras
+textstat
