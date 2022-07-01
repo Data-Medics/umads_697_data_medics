@@ -22,14 +22,27 @@ This will recreate the files _supervised_computed_features.ipynb_ and _supervise
 in the output folder.
 
 ## Setup
+
+### Get the project
+
 ```buildoutcfg
 git clone https://github.com/Data-Medics/umads_697_data_medics.git
 cd umads_697_data_medics
-python3 -m venv env
-source env/bin/activate
-./setup_local
-cd pipeline
-export PYTHONPATH=`pwd`:`pwd`/pipeline:$PYTHONPATH
+```
+
+### Setup Poetry
+
+We use [poetry](https://python-poetry.org/docs/) to manage python dependency.
+If you do not have poetry, please use [this command](https://python-poetry.org/docs/#osx--linux--bashonwindows-install-instructions)
+
+In terminal, go to your project directory and update the poetry env (this is because we started off with the `pyproject.toml`). A new file will be created, poetry.lock 
+```bash
+$ poetry update 
+```
+
+Enter into poetry shell. With the shell you can run ploomner, or a Jupyter notebook. 
+```bash
+$ poetry shell
 ```
 
 ## Running Jupyter Notebooks
