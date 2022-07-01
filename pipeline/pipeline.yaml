@@ -1,7 +1,21 @@
  tasks:
-  - source: report.py
-    name: report
+  - source: report_supervised.py
+    name: report_supervised
     product:
-      nb: output/report.ipynb
+      nb: output/report_supervised.ipynb
+    params:
+      lookback_days: 10
+
+  - source: report_topics.py
+    name: report_topics
+    product:
+      nb: output/report_topics.ipynb
+    params:
+      lookback_days: 10
+
+  - source: report_unsupervised.py
+    name: report_unsupervised
+    product:
+      nb: output/report_unsupervised.ipynb
     params:
       lookback_days: 10
