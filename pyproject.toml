@@ -30,6 +30,11 @@ ploomber = "*"
 nltk = "*"
 textstat = "*"
 spacy = "*"
+geopandas = "*"
+geopy = "*"
+folium = "*"
+gensim = "*"
+lime = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
