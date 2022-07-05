@@ -2,7 +2,7 @@
 name = "data-medics-capstone"
 version = "0.0.1"
 description = ""
-authors = ["jtzupan@umich.edu", "rjgillin@umich.edu", "mbouss@umich.edu"]
+authors = ["tyler zupan <jtzupan@umich.edu>", "robert gillin <rjgillin@umich.edu>", "miroslav boussarov <mbouss@umich.edu>"]
 
 [tool.poetry.dependencies]
 python = ">=3.8, <3.10"
