@@ -45,7 +45,72 @@ Enter into poetry shell. With the shell you can run ploomner, or a Jupyter noteb
 $ poetry shell
 ```
 
+## Getting the data
+Use the following [Google Drive location](https://drive.google.com/file/d/1pNMVhe1eXrm85SS6uyJkq8XVhF4Uqz2i/view) to obtain the data file.
+Once you do, copy it to a folder <umads_697_data_medics project toot>/data. Execute the following commands:
+```bash
+$ gunzip HumAID_data_v1.0.tar.gz
+$ tar -xvzf HumAID_data_v1.0.tar
+```
+This will create the following file structure that is used by the ML processing pipelines:
+```
+data
+    HumAID_data_v1.0
+        all_combined
+        event_type
+        events
+```
+
 ## Running Jupyter Notebooks
 ```buildoutcfg
 jupyter notebook .
 ```
+
+## Pipeline processing logic
+The pipelines executed with 'ploomber build" from the 'pipeline' folder perform the following:
+- Vectorizing the tweets 
+  - TF/IDF sparse vectors with bigrams
+    - TODO: Add stemming, better stop words removal
+  - Word embedding dense vectors with Word2vec
+- Predicting the class labels from the tweet payload
+  - Implemented basic linear regression
+    - Achieved F1 score of 0.71 using TF/IDF vectors with bigrams
+    - Word embedding dense vectors produced F1 of 0.63
+  - TODO: Implement other algorithms (Random Forest, XGBoost), see if they improve the score
+  - TODO: Implement a Neural Network see if it improves the score
+- Predicting the disaster types from the tweet payload
+  - Implemented basic linear regression
+    - Achieved F1 score of 0.95 using TF/IDF vectors with bigrams
+  - TODO: Implement other algorithms (Random Forest, XGBoost), see if they improve the score
+  - TODO: Implement a Neural Network see if it improves the score
+- TODO: Predict if a tweets is a disaster/nom-disaster tweet, leverage the category labels for that
+- TODO: Do a topic modeling based on the tweets (elaborate)
+- TODO: Do an unsupervised modeling based on the tweets (elaborate)
+- Extracting locations from the tweets
+- Visualizing the locations of the tweets on the world map, showing where the disasters are happening based on a tweet stream
+- Explaining why the tweet is predicted as a label, what words contributed for that
+- TODO: Aggregate and explain what features are contributing for the class predictions 
+- TODO: Extract the actions to be performed when a disaster is going on:
+  - TODO: Extract the names of the organizations that deal with the disasters
+  - TODO: Extract the actions these organizations recommend/advise (the verbs)
+  - TODO: Extract the respective objects for these actions (i.e. destinations etc)
+
+## The complete functionality to be delivered (TODO)
+- Produce and train the following:
+  - Vectorizer that converts the tweet body to matrix/vectors
+  - Classifiers that predict the following:
+    - If this is a disaster tweet or not
+    - What class is this tweet
+    - What disaster type is this tweet about
+  - Location extractor that identifies the main locations mentioned in a body of tweets
+  - Organizations and the main actions from them as found in a body of tweets
+- Extract a body of tweets by querying Tweeter APIs
+- Apply the above classifiers on this body answering the following:
+  - Is there a disaster going on?
+  - What type of disaster it is?
+  - What are the affected locations?
+  - What are the recommended actions per the organizations that handle the disasters
+  - Visualize the disaster intensity over time
+- If time permits, load the data in [Streamlit](https://streamlit.io/), make the above analysis as an online app running there
+
+

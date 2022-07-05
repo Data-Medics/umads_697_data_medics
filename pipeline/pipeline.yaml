@@ -1,21 +1,28 @@
  tasks:
-  - source: report_supervised.py
-    name: report_supervised
-    product:
-      nb: output/report_supervised.ipynb
-    params:
-      lookback_days: 10
+#  - source: report_supervised.py
+#    name: report_supervised
+#    product:
+#      nb: output/report_supervised.ipynb
+#    params:
+#      lookback_days: 10
+#
+#  - source: report_topics.py
+#    name: report_topics
+#    product:
+#      nb: output/report_topics.ipynb
+#    params:
+#      lookback_days: 10
+#
+#  - source: report_unsupervised.py
+#    name: report_unsupervised
+#    product:
+#      nb: output/report_unsupervised.ipynb
+#    params:
+#      lookback_days: 10
 
-  - source: report_topics.py
-    name: report_topics
+  - source: happy_path_exploration.py
+    name: happy_path_exploration
     product:
-      nb: output/report_topics.ipynb
-    params:
-      lookback_days: 10
-
-  - source: report_unsupervised.py
-    name: report_unsupervised
-    product:
-      nb: output/report_unsupervised.ipynb
+      nb: output/happy_path_exploration.ipynb
     params:
       lookback_days: 10
