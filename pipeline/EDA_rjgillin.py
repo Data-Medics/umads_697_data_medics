@@ -7,10 +7,19 @@ import matplotlib.pyplot as plt
 from collections import Counter, defaultdict
 
 from sklearn.dummy import DummyClassifier
-from sklearn.feature_extraction.te
+from sklearn.feature_extraction import text
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn import preprocessing
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
+from sklearn.linear_model import SGDClassifier
+from sklearn.model_selection import StratifiedKFold
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split 
 from tqdm import tqdm # Used to show a progress bar
@@ -101,16 +110,17 @@ vectorizer = CountVectorizer(strip_accents='ascii',
                 max_df = max_df,
                 analyzer = 'word')
 
-X_train = vectorizer.fit_transform(df_train['tweet_text'])
+X = vectorizer.fit_transform(df_all['tweet_text'])
 # -
 
 tf_feature_names = vectorizer.get_feature_names_out()
 
-vectorizer.get_feature_names_out()
+vectorizer.get_feature_names_out()[:25]
 
-X_train.shape
+X.shape
 
-lda = LatentDirichletAllocation(n_components=20, 
+num_topics = 10
+lda = LatentDirichletAllocation(n_components=num_topics, 
                                 doc_topic_prior=None, 
                                 topic_word_prior=None, 
                                 learning_method='batch', 
@@ -126,11 +136,11 @@ lda = LatentDirichletAllocation(n_components=20,
                                 n_jobs=None, 
                                 verbose=0, 
                                 random_state=random_seed)
-lda.fit(X_train)
+lda.fit(X)
 
 
 def plot_top_words(model, feature_names, n_top_words, title):
-    fig, axes = plt.subplots(4, 5, figsize=(50, 40), sharex=True)
+    fig, axes = plt.subplots(2, 5, figsize=(50, 40), sharex=True)
     axes = axes.flatten()
     for topic_idx, topic in enumerate(model.components_):
         top_features_ind = topic.argsort()[: -n_top_words - 1 : -1]
@@ -150,9 +160,104 @@ def plot_top_words(model, feature_names, n_top_words, title):
     plt.show()
 
 
-n_top_words = 20
+n_top_words = 15
 plot_top_words(lda, tf_feature_names, n_top_words, "Topics in LDA model")
 #definitely need to apply more rigourous text cleaning methods
 #Look into genism and doc2bow
+
+
+
+# ## Extract topics as feature vectors
+
+X_transformed = lda.transform(X)
+le = preprocessing.LabelEncoder()
+y = le.fit_transform(df_all['class_label'])
+combined = np.concatenate((X_transformed,y.reshape(-1,1)),axis=1)
+combined.shape
+
+
+
+
+# Train/test splits
+X_train, X_test, y_train, y_test = train_test_split(
+    combined[:,0:num_topics], combined[:,-1], test_size=0.2, random_state=random_seed
+)
+
+X_train[1]
+
+# + active=""
+#
+# -
+
+# ## Test out classifiers with LDA Vectors as input
+
+classifiers = [MultinomialNB(),
+               KNeighborsClassifier(),
+               LogisticRegression(solver='lbfgs', multi_class='auto', random_state=random_seed, max_iter=1000),
+               DummyClassifier(random_state=random_seed),
+               RandomForestClassifier(random_state=random_seed),
+               SGDClassifier(random_state=random_seed),
+               GaussianNB()]
+
+kfold = StratifiedKFold(n_splits=10)
+results = []
+for model in classifiers:
+    results.append(cross_val_score(model, 
+                                   X_train, 
+                                   y_train,
+                                   scoring='accuracy',
+                                   cv = kfold,
+                                   n_jobs=4))
+
+# +
+cv_means = []
+cv_std = []
+for cv_result in results:
+    cv_means.append(cv_result.mean())
+    cv_std.append(cv_result.std())
+    
+cv_res = pd.DataFrame({"CrossValMeans":cv_means,
+                        "CrossValerrors": cv_std,
+                        "Algorithm":
+                            ['MultinomialNB',
+                            'KNeighborsClassifier',
+                            'LogisticRegression',
+                            'DummyClassifier',
+                            'RandomForestClassifer',
+                            'SGDClassifier',
+                            'GaussianNB']})
+# -
+
+cv_res
+
+# +
+test_results = []
+for model in classifiers:
+    fitted = model.fit(X_train,y_train)
+    test_results.append(accuracy_score(y_test,fitted.predict(X_test)))
+
+test_result_df = pd.DataFrame({"Test Accuracy":test_results,
+                        "Algorithm":
+                            ['MultinomialNB',
+                            'KNeighborsClassifier',
+                            'LogisticRegression',
+                            'DummyClassifier',
+                            'RandomForestClassifer',
+                            'SGDClassifier',
+                            'GaussianNB']})
+# -
+
+test_result_df
+
+
+
+# # Need to Investigate
+#
+# 1.) genism topic modeling package <br>
+# 2.) more sophisticated text cleaning methods <br>
+# 3.) class balancing <br>
+# 4.) additional text featurizing methods, tfidf etc <br>
+# 5.) need to optimize number of topics and hyperparameter tuning <br>
+# 6.) Perplexity/Cohearance scores <br>
 
 
