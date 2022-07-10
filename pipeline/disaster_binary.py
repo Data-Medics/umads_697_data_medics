@@ -28,7 +28,7 @@ df_train = pd.read_csv('../data/HumAID_data_v1.0/all_combined/all_train.tsv', se
 df_test = pd.read_csv('../data/HumAID_data_v1.0/all_combined/all_test.tsv', sep='\t')
 
 df_random_sample = pd.read_csv(upstream["twitter_random_sample"]["file"])
-df_wildfire_sample = pd.read_csv(upstream["twitter_random_sample"]["file"])
+df_wildfire_sample = pd.read_csv(upstream["twitter_wildfire_sample"]["file"])
 
 df_dev.dropna(inplace=True)
 df_train.dropna(inplace=True)
