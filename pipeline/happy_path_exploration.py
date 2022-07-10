@@ -17,7 +17,6 @@ from tqdm import tqdm # Used to show a progress bar
 
 # + tags=["parameters"]
 upstream = []
-lookback_days = None
 random_seed = None
 # -
 
