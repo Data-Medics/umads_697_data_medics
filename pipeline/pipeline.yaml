@@ -25,7 +25,7 @@
     product:
       nb: output/happy_path_exploration.ipynb
     params:
-      lookback_days: 10
+      random_seed: 42
 
   - source: twitter_sample.py
     name: twitter_random_sample
@@ -35,7 +35,7 @@
     params:
       query: 'the'
       language: '{{query_language}}'
-      limit: '{{query_limit}}'
+      limit: 10000
       credentials_file: '{{credentials_file}}'
 
   - source: twitter_sample.py
@@ -46,7 +46,7 @@
     params:
       query: 'wildfire'
       language: '{{query_language}}'
-      limit: '{{query_limit}}'
+      limit: 10000
       credentials_file: '{{credentials_file}}'
 
   - source: twitter_sample.py
@@ -81,3 +81,10 @@
       language: '{{query_language}}'
       limit: '{{query_limit}}'
       credentials_file: '{{credentials_file}}'
+
+  - source: disaster_binary.py
+    name: disaster_binary
+    product:
+      nb: output/disaster_binary.ipynb
+    params:
+      random_seed: 42
