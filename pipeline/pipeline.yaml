@@ -26,3 +26,58 @@
       nb: output/happy_path_exploration.ipynb
     params:
       lookback_days: 10
+
+  - source: twitter_sample.py
+    name: twitter_random_sample
+    product:
+      nb: output/twitter_random_sample.ipynb
+      file: output/twitter_random_sample.csv
+    params:
+      query: 'the'
+      language: '{{query_language}}'
+      limit: '{{query_limit}}'
+      credentials_file: '{{credentials_file}}'
+
+  - source: twitter_sample.py
+    name: twitter_wildfire_sample
+    product:
+      nb: output/twitter_wildfire_sample.ipynb
+      file: output/twitter_wildfire_sample.csv
+    params:
+      query: 'wildfire'
+      language: '{{query_language}}'
+      limit: '{{query_limit}}'
+      credentials_file: '{{credentials_file}}'
+
+  - source: twitter_sample.py
+    name: twitter_earthquake_sample
+    product:
+      nb: output/twitter_earthquake_sample.ipynb
+      file: output/twitter_earthquake_sample.csv
+    params:
+      query: 'earthquake'
+      language: '{{query_language}}'
+      limit: '{{query_limit}}'
+      credentials_file: '{{credentials_file}}'
+
+  - source: twitter_sample.py
+    name: twitter_flood_sample
+    product:
+      nb: output/twitter_flood_sample.ipynb
+      file: output/twitter_flood_sample.csv
+    params:
+      query: 'flood'
+      language: '{{query_language}}'
+      limit: '{{query_limit}}'
+      credentials_file: '{{credentials_file}}'
+
+  - source: twitter_sample.py
+    name: twitter_disaster_sample
+    product:
+      nb: output/twitter_disaster_sample.ipynb
+      file: output/twitter_disaster_sample.csv
+    params:
+      query: '(wildfire OR flood OR earthquake)'
+      language: '{{query_language}}'
+      limit: '{{query_limit}}'
+      credentials_file: '{{credentials_file}}'
