@@ -150,4 +150,6 @@ df_wildfire_sample.iloc[disaster_idx].sample(10)
 
 df_wildfire_sample.iloc[nondisaster_idx].sample(10)
 
+df_wildfire_sample['tweet_text'][8917]
+
 
