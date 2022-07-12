@@ -3,4 +3,5 @@ data/
 .ipynb_checkpoints
 .idea/
 poetry.lock
+credentials.yaml
 
