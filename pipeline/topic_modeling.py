@@ -141,14 +141,14 @@ corpus = [dictionary.doc2bow(token) for token in tweets_bigrams['tokens']]
 lda_model = LdaModel(corpus,
                     id2word=dictionary,
                     chunksize=2000,
-                    passes=20,
-                    iterations=400,
+                    passes=10,
+                    iterations=100,
                     eval_every=None,
                     random_state=random_seed,
                     alpha='auto',
                     eta='auto',
                     num_topics=4)
-    
+
 
 # ## Get dominant topics, percent contribution and keywords
 
@@ -373,7 +373,9 @@ show(plot)
 
 # ## pyLDAVis
 
-import pyLDAvis.gensim
+import pyLDAvis.gensim_models
 pyLDAvis.enable_notebook()
-vis = pyLDAvis.gensim.prepare(lda_model, corpus, dictionary=lda_model.id2word)
+vis = pyLDAvis.gensim_models.prepare(lda_model, corpus, dictionary=lda_model.id2word)
 vis
+
+
