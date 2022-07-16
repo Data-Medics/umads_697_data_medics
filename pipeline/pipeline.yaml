@@ -88,3 +88,10 @@
       nb: output/disaster_binary.ipynb
     params:
       random_seed: 42
+
+  - source: embedding_bag_nn.py
+    name: embedding_bag_nn
+    product:
+      nb: output/embedding_bag_nn.ipynb
+    params:
+      nrows: 500
