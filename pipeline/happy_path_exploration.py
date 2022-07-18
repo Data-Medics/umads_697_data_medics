@@ -359,17 +359,22 @@ from spacy import displacy
 nlp = spacy.load('xx_ent_wiki_sm')
 
 # +
+# %%time
 # Go through the dev data and collect all the locations
 locations = []
+label_types = set()
 
 for _, row in tqdm(df_disaster_dev.iterrows()):
-    doc = nlp(row['tweet_text'])    
+    doc = nlp(row['tweet_text'])
     locations.extend([[row['tweet_id'], ent.text, ent.start, ent.end] for ent in doc.ents if ent.label_ in ['LOC']])
+    label_types |= {ent.label_ for ent in doc.ents}
     
 df_locs = pd.DataFrame(locations, columns=['TweetID', 'Location', 'start', 'end'])
 # -
 
 df_locs.sample(50)
+
+label_types
 
 # +
 locations = Counter(df_locs['Location']).most_common(20)
