@@ -19,11 +19,27 @@
 #      nb: output/report_unsupervised.ipynb
 #    params:
 #      lookback_days: 10
+  - source: tokenization.py
+    name: tokenization
+    product:
+      nb: output/tokenization.ipynb
+      vectorizer: output/vectorizer.pkl
+      vocab: output/vocab.pkl
+      stopwords: output/stopwords.csv
+    params:
+      random_seed: 42
 
   - source: happy_path_exploration.py
     name: happy_path_exploration
     product:
       nb: output/happy_path_exploration.ipynb
+    params:
+      random_seed: 42
+
+  - source: compare_algorithms.py
+    name: compare_algorithms.py
+    product:
+      nb: output/compare_algorithms.ipynb
     params:
       random_seed: 42
 
@@ -88,3 +104,39 @@
       nb: output/disaster_binary.ipynb
     params:
       random_seed: 42
+
+  - source: embedding_bag_nn.py
+    name: embedding_bag_nn
+    product:
+      nb: output/embedding_bag_nn.ipynb
+    params:
+      nrows: 500
+
+  - source: twitter_sample_timeline.py
+    name: twitter_sample_timeline
+    product:
+      nb: output/twitter_wildfire_timeline.ipynb
+      file: output/twitter_wildfire_timeline.csv
+    params:
+      query: 'wildfire'
+      language: '{{query_language}}'
+      limit: 2000
+      skip_interval_hours: 2
+      random_seed: 42
+      credentials_file: '{{credentials_file}}'
+
+  - source: recommended_actions_upstream.py
+    name: recommended_actions_upstream
+    product:
+      nb: output/recommended_actions_upstream.ipynb
+      file: output/twitter_actions.csv
+    params:
+      query: '(wildfire OR flood OR earthquake)'
+      language: 'en'
+      limit: 500
+      credentials_file: "credentials.yaml"
+   
+  - source: recommended_actions.py
+    name: recommended_actions
+    product:
+      nb: output/recommended_actions_upstream.ipynb
