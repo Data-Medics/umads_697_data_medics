@@ -13,8 +13,6 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.model_selection import GridSearchCV
 from pprint import pprint
 
-import pyLDAvis
-import pyLDAvis.sklearn
 import matplotlib.pyplot as plt
 # %matplotlib inline
 
@@ -76,26 +74,6 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_colwidth', None)
 df_all.iloc[0]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
 
@@ -145,10 +123,11 @@ tweets_vectorized = vectorizer.fit_transform(tweet_corpus)
 lda_model = LatentDirichletAllocation(n_components=4,               # Number of topics
                                       max_iter=10,               # Max learning iterations
                                       learning_method='online',   
-                                      random_state=random_seed,          # Random state
+                                      random_state=random_seed,  # Random state
                                       batch_size=128,            # n docs in each learning iter
                                       evaluate_every = -1,       # compute perplexity every n iters, default: Don't
                                       n_jobs = -1,               # Use all available CPUs
+                                      learning_decay = .9        # Use all available CPUs
                                      )
 lda_output = lda_model.fit_transform(tweets_vectorized)
 
@@ -210,15 +189,16 @@ log_likelyhoods_7 = [round(model.cv_results_['mean_test_score'][index]) for inde
 log_likelyhoods_9 = [round(model.cv_results_['mean_test_score'][index]) for index, gscore in enumerate(model.cv_results_['params']) if gscore['learning_decay']==0.9]
 
 # Show graph
-plt.figure(figsize=(12, 8))
+fig = plt.figure(figsize=(12, 8))
 plt.plot(n_topics, log_likelyhoods_5, label='0.5')
 plt.plot(n_topics, log_likelyhoods_7, label='0.7')
 plt.plot(n_topics, log_likelyhoods_9, label='0.9')
-plt.title("Choosing Optimal LDA Model")
+plt.title("Best LDA Model = {}".format(model.best_params_))
 plt.xlabel("Num Topics")
 plt.ylabel("Log Likelyhood Scores")
 plt.legend(title='Learning decay', loc='best')
 plt.show()
+fig.savefig('topic_model_gridsearch_results.png',format='png')
 # -
 
 # ## Dominant Topics
@@ -296,27 +276,27 @@ df_topic_keywords
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
 def predict_topic(text, nlp=nlp):
-    global sent_to_words #NEED TO DEFINE THIS
-    global lemmatization #NEED TO DEFINE THIS
-
+    global text_pre_procesing
+    global lemmatize 
+    
     # Step 1: Clean with simple_preprocess
-    mytext_2 = list(sent_to_words(text))
+    cleaned_text = list(text_pre_processing(text))
 
     # Step 2: Lemmatize
-    mytext_3 = lemmatization(mytext_2, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV'])
+    lemmatized_text = lemmatize(cleaned_text, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV'])
 
     # Step 3: Vectorize transform
-    mytext_4 = vectorizer.transform(mytext_3)
+    vectorized_text = vectorizer.transform([x for x in lemmatized_text])
 
     # Step 4: LDA Transform
-    topic_probability_scores = best_lda_model.transform(mytext_4)
+    topic_probability_scores = best_lda_model.transform(vectorized_text)
     topic = df_topic_keywords.iloc[np.argmax(topic_probability_scores), :].values.tolist()
-    return topic, topic_probability_scores
+    return cleaned_text, lemmatized_text, topic, topic_probability_scores
 
 # Predict the topic
-mytext = ["Some text about christianity and bible"]
-topic, prob_scores = predict_topic(text = mytext)
-print(topic)
+mytext = "flooding kerala relieve"
+cleaned_text, lemmatized_text, topic, prob_scores = predict_topic(text = mytext)
+print(cleaned_text, lemmatized_text, topic, prob_scores)
 # -
 
 # ## Get similar tweets
