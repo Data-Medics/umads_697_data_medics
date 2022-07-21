@@ -1,14 +1,30 @@
 import pandas as pd
 import tweepy
-import re
 import yaml
 
 # + tags=["parameters"]
 upstream = []
-query=None
+disaster_types = None
+action_types = None
+# query=None
 language=None
 limit=None
 credentials_file=None
+
+# query = '(wildfire OR flood OR earthquake donate evacuate volunteer)'
+# disaster_types = ["wildfire", "flood", "earthquake"]
+# action_types = ["volunteer", "donate", "evacuate"]
+# language = 'en'
+# limit = 1000
+# credentials_file = "credentials.yaml"
+
+# +
+queries = []
+for d in disaster_types:
+    for a in action_types:
+        queries.append(d + " "+ a)
+        
+query = "(" + " OR ".join(queries) + ")" 
 
 # +
 with open(credentials_file, 'r') as stream:
@@ -26,13 +42,12 @@ def get_hashtags(entity):
     return [tag.get('tag') for tag in hashtags]
 
 
-def query_tweets(bearer_token, query, max_results=100, limit=1000):
+def query_tweets(bearer_token, query, max_results=100, limit=limit):
     client = tweepy.Client(
         bearer_token=bearer_token,
         wait_on_rate_limit=True
     )
 
-    tweets_collection = []
     tweet_fields=['text', 'created_at', 'entities', 'author_id']
     
     full_df = pd.DataFrame()
@@ -46,7 +61,6 @@ def query_tweets(bearer_token, query, max_results=100, limit=1000):
         while counter < limit:
             users = batched_tweets.includes['users']
             users_df = pd.DataFrame(users, columns=['id','name','username'])
-
             data = batched_tweets.data
             data_df = pd.DataFrame(data)
             data_df["created_at"] = pd.to_datetime(data_df.created_at)
@@ -63,7 +77,15 @@ def query_tweets(bearer_token, query, max_results=100, limit=1000):
 
 df = query_tweets(bearer_token, query=query + ' lang:' + language, limit=limit)
 
-df.to_csv(product['file'], index=False)
-# df.to_csv("output/twitter_actions.csv", index=False)
+# hash the tweet text to count unique tweets
+df["tweet_hash"] = df["tweet_text"].apply(lambda a: hash(a) % 100000000)
+
+# counts by tweet
+df["tweet_count"] = df.groupby("tweet_hash").transform("count")["tweet_text"]
+
+df_slim = df.groupby("tweet_hash").first()
+
+df_slim.to_csv(product['file'], index=False)
+# df_slim.to_csv("output/twitter_actions.csv", index=False)
 
 

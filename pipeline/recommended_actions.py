@@ -1,18 +1,21 @@
 # + tags=[]
 import os
 import pandas as pd
+import pickle
 import sys
 import spacy
 from spacy.language import Language
-import tweepy
 import re
+# -
+
+from sklearn.linear_model import LogisticRegression
 
 # + tags=["parameters"]
 # once we have tweets of interest the upstream will change
 # to the data generation step we are actually interested in
-upstream = ["recommended_actions_upstream"]
+upstream = ["recommended_actions_upstream", "train_logistic_regression"]
 
-# + tags=["injected-parameters"]
+# +
 # load a spacy language model
 nlp = spacy.load("en_core_web_sm")
 stopwords = nlp.Defaults.stop_words
@@ -20,11 +23,26 @@ stopwords = nlp.Defaults.stop_words
 
 
 # df = pd.read_csv(params['file'])
-df = pd.read_csv("output/x.csv")
+df = pd.read_csv("output/twitter_actions.csv")
 
-df.head()
+# load the vectorizer
+vectorizer = pickle.load(open(os.path.join(".", "output", "fitted_models", "vectorizer.pkl"), "rb"))
 
-df["spacy_text"] = df["tweet_text"].apply(nlp)
+# load the model
+clf_model = pickle.load(open(os.path.join(".", "output", "fitted_models", "lr_model.pkl"), "rb"))
+
+# prepare text for model - vectorize the tweets 
+raw_tweets_vectorized = vectorizer.transform(df['tweet_text'])
+
+tweet_class_preds = clf_model.predict(raw_tweets_vectorized)
+
+df["predicted_class"] = tweet_class_preds
+
+# filter to only the tweets we are interested in - those callling for an action
+action_tweets = df[df.predicted_class == "rescue_volunteering_or_donation_effort"].copy()
+action_tweets = action_tweets.sort_values("tweet_count", ascending=False)
+
+action_tweets["spacy_text"] = action_tweets["tweet_text"].apply(nlp)
 
 
 def make_str(list_of_verbs):
@@ -38,9 +56,10 @@ def make_str(list_of_verbs):
 verb_list = ["donate", "volunteer", "evacuate"]
 regex = re.compile('|'.join(re.escape(x) for x in verb_list), re.IGNORECASE)
 
-for idx, data in df.iterrows():
+for idx, data in action_tweets.iterrows():
     # find the recommended action
     verb_matches = re.findall(regex, data["tweet_text"])
+    total_tweet_count = data.tweet_count - 1
     
     # at least on word has been found
     if len(verb_matches) > 0:
@@ -63,6 +82,9 @@ for idx, data in df.iterrows():
                 tweet_author = original_tweeter[0]
             else:
                 tweet_author = data["name"]
-            for url in donation_url_list:
-                print(f"{tweet_author} recommends you {make_str(verb_matches)}.  More information at {url}\n")
+            for idx, url in enumerate(donation_url_list):
+                if idx == 0:
+                    print(f"{tweet_author} and {total_tweet_count} others recommend you {make_str(verb_matches)}.  More information at {url}")
+                else:
+                    print(f"Please also consider donating to {url}")
             print("\n\n")
