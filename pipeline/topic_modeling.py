@@ -148,7 +148,7 @@ lda_model = LdaModel(corpus,
                     alpha='auto',
                     eta='auto',
                     num_topics=4)
-    
+
 
 # ## Get dominant topics, percent contribution and keywords
 
@@ -377,3 +377,7 @@ import pyLDAvis.gensim
 pyLDAvis.enable_notebook()
 vis = pyLDAvis.gensim.prepare(lda_model, corpus, dictionary=lda_model.id2word)
 vis
+
+
+
+
