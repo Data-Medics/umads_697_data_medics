@@ -116,6 +116,8 @@ tweet_corpus = df_all['lemmatized'].tolist()
 
 
 
+
+
 # ## Count Vectorizer
 
 # +
@@ -225,58 +227,58 @@ best_lda_model = lda_model #model.best_estimator_
 # ## Cohearance Score
 
 # +
-def find_topics(tokens, num_topics):
+# def find_topics(tokens, num_topics):
     
-    dictionary = Dictionary(tokens)
-    dictionary.filter_extremes(no_above=.2,keep_n=None)
-     #words that represent more than 80% of the corpus
-    # use the dictionary to create a bag of word representation of each document
-    corpus = [dictionary.doc2bow(token) for token in tokens]
-    # create gensim's LDA model 
-    lda_model = LdaModel(corpus,
-                         id2word=dictionary,
-                         chunksize=2000,
-                         passes=20,
-                         iterations=400,
-                         eval_every=None,
-                         random_state=random_seed,
-                         alpha='auto',
-                         eta='auto',
-                         num_topics=num_topics)
+#     dictionary = Dictionary(tokens)
+#     dictionary.filter_extremes(no_above=.2,keep_n=None)
+#      #words that represent more than 80% of the corpus
+#     # use the dictionary to create a bag of word representation of each document
+#     corpus = [dictionary.doc2bow(token) for token in tokens]
+#     # create gensim's LDA model 
+#     lda_model = LdaModel(corpus,
+#                          id2word=dictionary,
+#                          chunksize=2000,
+#                          passes=20,
+#                          iterations=400,
+#                          eval_every=None,
+#                          random_state=random_seed,
+#                          alpha='auto',
+#                          eta='auto',
+#                          num_topics=num_topics)
     
     
     
-    return lda_model.top_topics(corpus) 
+#     return lda_model.top_topics(corpus) 
 
 
-##takes ~30-40 minutes to run
-def calculate_avg_coherence(topics):
-    """
-    Calculates the average coherence based on the top_topics returned by gensim's LDA model
-    """
-    x = 0
-    for i, topic in enumerate(topics):
-        x += topic[1]
-    avg_topic_coherence = x/i
+# ##takes ~30-40 minutes to run
+# def calculate_avg_coherence(topics):
+#     """
+#     Calculates the average coherence based on the top_topics returned by gensim's LDA model
+#     """
+#     x = 0
+#     for i, topic in enumerate(topics):
+#         x += topic[1]
+#     avg_topic_coherence = x/i
     
-    return avg_topic_coherence
+#     return avg_topic_coherence
 
 
-def plot_coherences_topics(tokens):
-    """
-    Creates a plot as shown above of coherence for the topic models created with num_topics varying from 2 to 10
-    """
-    # range of topics
-    topics_range = range(2, 20, 1)
-    model_results = {'Topics': [],'Coherence': []}
-    for i in tqdm(topics_range):
-        model_topics = find_topics(tokens,i)
-        model_results['Topics'].append(i)
-        model_results['Coherence'].append(calculate_avg_coherence(model_topics))
+# def plot_coherences_topics(tokens):
+#     """
+#     Creates a plot as shown above of coherence for the topic models created with num_topics varying from 2 to 10
+#     """
+#     # range of topics
+#     topics_range = range(2, 20, 1)
+#     model_results = {'Topics': [],'Coherence': []}
+#     for i in tqdm(topics_range):
+#         model_topics = find_topics(tokens,i)
+#         model_results['Topics'].append(i)
+#         model_results['Coherence'].append(calculate_avg_coherence(model_topics))
     
-    plt = pd.DataFrame(model_results).set_index('Topics').plot()
+#     plt = pd.DataFrame(model_results).set_index('Topics').plot()
 
-coherences_df = plot_coherences_topics([x.split(" ") for x in tweet_corpus])
+# coherences_df = plot_coherences_topics([x.split(" ") for x in tweet_corpus])
 # -
 
 
@@ -437,5 +439,8 @@ df_topic_keywords.columns = [f"{'Topic: ' if idx>=0 else ''}{col}"
 # topics_file = os.path.join(src_file_path, 'output\lda_topics.csv')
 # df_all.to_csv(filename)
 df_topic_keywords
+
+topics_file = os.path.join(src_file_path, 'output\lda_topics.csv')
+df_topic_keywords.to_csv(topics_file)
 
 
