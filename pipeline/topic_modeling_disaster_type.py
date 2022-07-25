@@ -16,6 +16,7 @@ from sklearn.metrics import f1_score
 import scikitplot as skplt
 from sklearn.metrics import (precision_recall_curve,PrecisionRecallDisplay)
 from sklearn.metrics import confusion_matrix
+import pickle
 
 from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -43,6 +44,8 @@ df_earthquake_dev['disaster_type'] = 'earthquake'
 df_earthquake_train['disaster_type'] = 'earthquake'
 df_earthquake_test['disaster_type'] = 'earthquake'
 
+df_earthquake_all = pd.concat([df_earthquake_dev, df_earthquake_train, df_earthquake_test])
+
 # Fire
 df_fire_dev = pd.read_csv('../data/HumAID_data_v1.0/event_type/fire_dev.tsv', sep='\t')
 df_fire_train = pd.read_csv('../data/HumAID_data_v1.0/event_type/fire_train.tsv', sep='\t')
@@ -51,6 +54,8 @@ df_fire_test = pd.read_csv('../data/HumAID_data_v1.0/event_type/fire_test.tsv', 
 df_fire_dev['disaster_type'] = 'fire'
 df_fire_train['disaster_type'] = 'fire'
 df_fire_test['disaster_type'] = 'fire'
+
+df_fire_all = pd.concat([df_fire_dev, df_fire_train, df_fire_test])
 
 # Flood
 df_flood_dev = pd.read_csv('../data/HumAID_data_v1.0/event_type/flood_dev.tsv', sep='\t')
@@ -61,6 +66,8 @@ df_flood_dev['disaster_type'] = 'flood'
 df_flood_train['disaster_type'] = 'flood'
 df_flood_test['disaster_type'] = 'flood'
 
+df_flood_all = pd.concat([df_flood_dev, df_flood_train, df_flood_test])
+
 # Hurricane
 df_hurricane_dev = pd.read_csv('../data/HumAID_data_v1.0/event_type/hurricane_dev.tsv', sep='\t')
 df_hurricane_train = pd.read_csv('../data/HumAID_data_v1.0/event_type/hurricane_train.tsv', sep='\t')
@@ -70,11 +77,14 @@ df_hurricane_dev['disaster_type'] = 'hurricane'
 df_hurricane_train['disaster_type'] = 'hurricane'
 df_hurricane_test['disaster_type'] = 'hurricane'
 
+df_hurricane_all = pd.concat([df_hurricane_dev, df_hurricane_train, df_hurricane_test])
+
 df_disaster_dev = pd.concat([df_earthquake_dev, df_fire_dev, df_flood_dev, df_hurricane_dev])
 df_disaster_train = pd.concat([df_earthquake_train, df_fire_train, df_flood_train, df_hurricane_train])
 df_disaster_test = pd.concat([df_earthquake_test, df_fire_test, df_flood_test, df_hurricane_test])
 
 df_all = pd.concat([df_disaster_dev, df_disaster_train, df_disaster_test])
+
 # -
 
 df_all.head()
@@ -206,218 +216,169 @@ skplt.metrics.plot_precision_recall_curve(y_test, y_pred_proba_lr)
 # ## Count Vectorizer
 
 # +
-nltk.download('stopwords')
-stop_words = set(stopwords.words('english'))
-stop_words |= {"attach", "ahead", "rt",'www','tinyurl','com', 'https', 'http', 
-               '&amp','amp', 'rt', 'bit', 'ly', 'bitly', 'trump', 'byte', 'bytes', 'donald','emoji', }
+# nltk.download('stopwords')
+# stop_words = set(stopwords.words('english'))
+# stop_words |= {"attach", "ahead", "rt",'www','tinyurl','com', 'https', 'http', 
+#                '&amp','amp', 'rt', 'bit', 'ly', 'bitly', 'trump', 'byte', 'bytes', 'donald','emoji', }
 
-vectorizer = CountVectorizer(analyzer='word',       
-                             min_df=10,                        # minimum reqd occurences of a word 
-                             stop_words=stop_words,             # remove stop words
-                             lowercase=False,                   # convert all words to lowercase
-                             #token_pattern='[a-zA-Z0-9]{3,}',  # num chars > 3
-                             # max_features=50000,             # max number of uniq words
-                            )
+# vectorizer = CountVectorizer(analyzer='word',       
+#                              min_df=10,                        # minimum reqd occurences of a word 
+#                              stop_words=stop_words,             # remove stop words
+#                              lowercase=False,                   # convert all words to lowercase
+#                              #token_pattern='[a-zA-Z0-9]{3,}',  # num chars > 3
+#                              # max_features=50000,             # max number of uniq words
+#                              ngram_range = (1,2)
+#                             )
 
-tweets_vectorized = vectorizer.fit_transform(tweet_corpus)
+# vectorizer = vectorizer.fit(df_all['lemmatized'])
+# +
+# Build Disaster Type LDA Model
+disaster_types = ['earthquake','fire', 'flood', 'hurricane']
+
+vectorizer_params = {'analyzer' : 'word',
+                    'min_df' : 10,
+                    'stop_words' : stop_words,
+                    'lowercase' : False,
+                    'ngram_range' : (1,2)}
+
+earthquake_vectorizer = CountVectorizer(**vectorizer_params).fit(list(df_all[df_all['disaster_type']=='earthquake']['lemmatized']))
+fire_vectorizer = CountVectorizer(**vectorizer_params).fit(list(df_all[df_all['disaster_type']=='fire']['lemmatized']))
+flood_vectorizer = CountVectorizer(**vectorizer_params).fit(list(df_all[df_all['disaster_type']=='flood']['lemmatized']))
+hurricane_vectorizer = CountVectorizer(**vectorizer_params).fit(list(df_all[df_all['disaster_type']=='hurricane']['lemmatized']))
 # -
-
 
 
 # ## LDA Model
 
 # +
-# Build LDA Model
-lda_model = LatentDirichletAllocation(n_components=5,            # Optimal
-                                      max_iter=10,               # Max learning iterations
-                                      learning_method='online',   
-                                      random_state=random_seed,  # Random state
-                                      batch_size=128,            # n docs in each learning iter
-                                      evaluate_every = -1,       # compute perplexity every n iters, default: Don't
-                                      n_jobs = -1,               # Use all available CPUs
-                                      learning_decay = .5        # Optimal
-                                     )
-lda_output = lda_model.fit_transform(tweets_vectorized)
+params = {'n_components' : 5,
+          'max_iter' : 10,
+          'learning_method' : 'online',
+          'random_state' : random_seed,
+          'batch_size' : 128,
+          'evaluate_every' : -1,
+          'n_jobs' : -1,
+          'learning_decay' : .5}
 
-print(lda_model)  # Model attributes
+lda_model_earthquake = LatentDirichletAllocation(**params)
+lda_model_fire = LatentDirichletAllocation(**params)
+lda_model_flood = LatentDirichletAllocation(**params)
+lda_model_hurricane = LatentDirichletAllocation(**params)
+
 # -
+
+
+earthquake_text_vectorized = earthquake_vectorizer.transform(list(df_all[df_all['disaster_type']=='earthquake']['lemmatized']))
+fire_text_vectorized = fire_vectorizer.transform(list(df_all[df_all['disaster_type']=='fire']['lemmatized']))
+flood_text_vectorized = flood_vectorizer.transform(list(df_all[df_all['disaster_type']=='flood']['lemmatized']))
+hurricane_text_vectorized = hurricane_vectorizer.transform(list(df_all[df_all['disaster_type']=='hurricane']['lemmatized']))
+
+lda_model_earthquake.fit_transform(earthquake_text_vectorized)
+lda_model_fire.fit_transform(fire_text_vectorized)
+lda_model_flood.fit_transform(flood_text_vectorized)
+lda_model_hurricane.fit_transform(hurricane_text_vectorized)
 
 # ## Performance Stats
 
 # +
 # Log Likelyhood: Higher the better
-print("Log Likelihood: ", lda_model.score(tweets_vectorized))
+print("Log Likelihood Earthquake: ", lda_model_earthquake.score(earthquake_text_vectorized))
+print("Log Likelihood Fire: ", lda_model_fire.score(fire_text_vectorized))
+print("Log Likelihood Flood: ", lda_model_flood.score(flood_text_vectorized))
+print("Log Likelihood Hurricane: ", lda_model_hurricane.score(hurricane_text_vectorized))
 
 # Perplexity: Lower the better. Perplexity = exp(-1. * log-likelihood per word)
-print("Perplexity: ", lda_model.perplexity(tweets_vectorized))
-
-# See model parameters
-pprint(lda_model.get_params())
+print("Perplexity Earthquake: ", lda_model_earthquake.perplexity(earthquake_text_vectorized))
+print("Perplexity Fire: ", lda_model_fire.perplexity(fire_text_vectorized))
+print("Perplexity Flood: ", lda_model_flood.perplexity(flood_text_vectorized))
+print("Perplexity Hurricane: ", lda_model_hurricane.perplexity(hurricane_text_vectorized))
 # -
 
-# ## Grid Search Model Parameters
-
-# +
-# # Define Search Param
-# search_params = {'n_components': [2, 4, 6, 8, 10], 'learning_decay': [.5, .7, .9]}
-
-# # Init the Model
-# lda = LatentDirichletAllocation()
-
-# # Init Grid Search Class
-# model = GridSearchCV(lda, param_grid=search_params)
-
-# # Do the Grid Search
-# model.fit(tweets_vectorized)
-# -
-
-# ## Best Model
-
-# +
-# Best Model
-best_lda_model = lda_model #model.best_estimator_
-
-# Model Parameters
-#print("Best Model's Params: ", model.best_params_)
-
-# Log Likelihood Score
-#print("Best Log Likelihood Score: ", model.best_score_)
-
-# Perplexity
-#print("Model Perplexity: ", best_lda_model.perplexity(tweets_vectorized))
-# -
-
-# ## Grid Search Results
-
-# +
-# # Get Log Likelyhoods from Grid Search Output
-# n_topics = [2, 4, 6, 8, 10]
-# log_likelyhoods_5 = [round(model.cv_results_['mean_test_score'][index]) for index, gscore in enumerate(model.cv_results_['params']) if gscore['learning_decay']==0.5]
-# log_likelyhoods_7 = [round(model.cv_results_['mean_test_score'][index]) for index, gscore in enumerate(model.cv_results_['params']) if gscore['learning_decay']==0.7]
-# log_likelyhoods_9 = [round(model.cv_results_['mean_test_score'][index]) for index, gscore in enumerate(model.cv_results_['params']) if gscore['learning_decay']==0.9]
-
-# # Show graph
-# fig = plt.figure(figsize=(12, 8))
-# plt.plot(n_topics, log_likelyhoods_5, label='0.5')
-# plt.plot(n_topics, log_likelyhoods_7, label='0.7')
-# plt.plot(n_topics, log_likelyhoods_9, label='0.9')
-# plt.title("Best LDA Model = {}".format(model.best_params_))
-# plt.xlabel("Num Topics")
-# plt.ylabel("Log Likelyhood Scores")
-# plt.legend(title='Learning decay', loc='best')
-# plt.show()
-# fig.savefig(r'umads_697_data_medics\pipeline\output\topic_model_gridsearch_results.png',format='png')
-# -
-
-# ## Cohearance Score
-
-# +
-# def find_topics(tokens, num_topics):
-    
-#     dictionary = Dictionary(tokens)
-#     dictionary.filter_extremes(no_above=.2,keep_n=None)
-#      #words that represent more than 80% of the corpus
-#     # use the dictionary to create a bag of word representation of each document
-#     corpus = [dictionary.doc2bow(token) for token in tokens]
-#     # create gensim's LDA model 
-#     lda_model = LdaModel(corpus,
-#                          id2word=dictionary,
-#                          chunksize=2000,
-#                          passes=20,
-#                          iterations=400,
-#                          eval_every=None,
-#                          random_state=random_seed,
-#                          alpha='auto',
-#                          eta='auto',
-#                          num_topics=num_topics)
-    
-    
-    
-#     return lda_model.top_topics(corpus) 
+#
 
 
-# ##takes ~30-40 minutes to run
-# def calculate_avg_coherence(topics):
-#     """
-#     Calculates the average coherence based on the top_topics returned by gensim's LDA model
-#     """
-#     x = 0
-#     for i, topic in enumerate(topics):
-#         x += topic[1]
-#     avg_topic_coherence = x/i
-    
-#     return avg_topic_coherence
+
+#
 
 
-# def plot_coherences_topics(tokens):
-#     """
-#     Creates a plot as shown above of coherence for the topic models created with num_topics varying from 2 to 10
-#     """
-#     # range of topics
-#     topics_range = range(2, 20, 1)
-#     model_results = {'Topics': [],'Coherence': []}
-#     for i in tqdm(topics_range):
-#         model_topics = find_topics(tokens,i)
-#         model_results['Topics'].append(i)
-#         model_results['Coherence'].append(calculate_avg_coherence(model_topics))
-    
-#     plt = pd.DataFrame(model_results).set_index('Topics').plot()
 
-# coherences_df = plot_coherences_topics([x.split(" ") for x in tweet_corpus])
-# -
+#
+
+
+
+#
+
+
 
 
 
 # ## Dominant Topics
 
-# +
-# Create Document - Topic Matrix
-lda_output = best_lda_model.transform(tweets_vectorized)
+def get_dominant_topics(lda_model, disaster_type, vectorized_text):
 
-# column names
-topicnames = ["Topic" + str(i) for i in range(best_lda_model.n_components)]
+    lda_output = lda_model.transform(vectorized_text)
+    
+    topicnames = ["Topic" + str(i) for i in range(lda_model.n_components)]
 
-# index names
-docnames = ["Doc" + str(i) for i in range(len(df_all))]
+    # index names
+    docnames = ["Doc" + str(i) for i in range(len(df_all[df_all['disaster_type']==disaster_type]))]
 
-# Make the pandas dataframe
-df_document_topic = pd.DataFrame(np.round(lda_output, 2), columns=topicnames, index=docnames)
+    # Make the pandas dataframe
+    df_document_topic = pd.DataFrame(np.round(lda_output, 2), columns=topicnames, index=docnames)
 
-# Get dominant topic for each document
-dominant_topic = np.argmax(df_document_topic.values, axis=1)
-df_document_topic['dominant_topic'] = dominant_topic
+    # Get dominant topic for each document
+    dominant_topic = np.argmax(df_document_topic.values, axis=1)
+    df_document_topic['dominant_topic'] = dominant_topic
 
-# Styling
-def color_green(val):
-    color = 'green' if val > .1 else 'black'
-    return 'color: {col}'.format(col=color)
+    # Styling
+    def color_green(val):
+        color = 'green' if val > .1 else 'black'
+        return 'color: {col}'.format(col=color)
 
-def make_bold(val):
-    weight = 700 if val > .1 else 400
-    return 'font-weight: {weight}'.format(weight=weight)
+    def make_bold(val):
+        weight = 700 if val > .1 else 400
+        return 'font-weight: {weight}'.format(weight=weight)
 
-# Apply Style
-df_document_topics = df_document_topic.head(15).style.applymap(color_green).applymap(make_bold)
-df_document_topics
-# -
+    # Apply Style
+    df_document_topics = df_document_topic.head(15).style.applymap(color_green).applymap(make_bold)
+    return df_document_topics
+ get_dominant_topics(lda_model_earthquake, 'earthquake', earthquake_text_vectorized)
 
+
+ get_dominant_topics(lda_model_fire, 'fire', fire_text_vectorized)
+
+ get_dominant_topics(lda_model_flood, 'flood', flood_text_vectorized)
+
+ get_dominant_topics(lda_model_hurricane, 'hurricane', hurricane_text_vectorized)
 
 
 # ## Topic Distribution
 
 # +
-# Topic-Keyword Matrix
-df_topic_keywords = pd.DataFrame(best_lda_model.components_)
+def get_topic_distribution(lda_model, vectorizer):
 
-# Assign Column and Index
-df_topic_keywords.columns = vectorizer.get_feature_names()
-df_topic_keywords.index = topicnames
+    # Topic-Keyword Matrix
+    df_topic_keywords = pd.DataFrame(lda_model.components_)
 
-# View
-df_topic_keywords.head()
+    # Assign Column and Index
+    df_topic_keywords.columns = vectorizer.get_feature_names()
+    df_topic_keywords.index = topicnames
+
+    # View
+    return df_topic_keywords
 
 
-# +
+# -
+
+get_topic_distribution(lda_model_earthquake, earthquake_vectorizer):
+
+get_topic_distribution(lda_model_fire, fire_vectorizer):
+
+get_topic_distribution(lda_model_flood, flood_vectorizer):
+
+get_topic_distribution(lda_model_hurricane, hurricane_vectorizer):
+
+
 # Show top n keywords for each topic
 def show_topics(vectorizer=vectorizer, lda_model=lda_model, n_words=20):
     keywords = np.array(vectorizer.get_feature_names())
@@ -425,81 +386,27 @@ def show_topics(vectorizer=vectorizer, lda_model=lda_model, n_words=20):
     for topic_weights in lda_model.components_:
         top_keyword_locs = (-topic_weights).argsort()[:n_words]
         topic_keywords.append(keywords.take(top_keyword_locs))
-    return topic_keywords
-
-topic_keywords = show_topics(vectorizer=vectorizer, lda_model=best_lda_model, n_words=15)        
-
-# Topic - Keywords Dataframe
-df_topic_keywords = pd.DataFrame(topic_keywords)
-df_topic_keywords.columns = ['Word '+str(i) for i in range(df_topic_keywords.shape[1])]
-df_topic_keywords.index = ['Topic '+str(i) for i in range(df_topic_keywords.shape[0])]
-df_topic_keywords
-# -
+    df_topic_keywords = pd.DataFrame(topic_keywords)
+    df_topic_keywords.columns = ['Word '+str(i) for i in range(df_topic_keywords.shape[1])]
+    df_topic_keywords.index = ['Topic '+str(i) for i in range(df_topic_keywords.shape[0])]
+    return df_topic_keywords
+show_topics(vectorizer=earthquake_vectorizer, lda_model=lda_model_earthquake, n_words=20)
 
 
+show_topics(vectorizer=fire_vectorizer, lda_model=lda_model_fire, n_words=20)
 
-# ## Predict Topics from Text
+show_topics(vectorizer=flood_vectorizer, lda_model=lda_model_flood, n_words=20)
 
-# +
-# # Define function to predict topic for a given text document.
-# nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
+show_topics(vectorizer=hurricane_vectorizer, lda_model=lda_model_hurricane, n_words=20)
 
-def predict_topic(text, nlp=nlp):
-    global text_pre_procesing
-    global lemmatize 
-    
-    # Step 1: Clean with simple_preprocess
-    cleaned_text = list(text_pre_processing(text))
-
-    # Step 2: Lemmatize
-    lemmatized_text = lemmatize(cleaned_text, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV'])
-    
-    # Step 3: Vectorize transform
-    vectorized_text = vectorizer.transform([lemmatized_text])
-
-    # Step 4: LDA Transform
-    topic_probability_scores = best_lda_model.transform(vectorized_text)
-    topic = df_topic_keywords.iloc[np.argmax(topic_probability_scores), 1:14].values.tolist()
-    
-    # Step 5: Infer Topic
-    infer_topic = df_topic_keywords.iloc[np.argmax(topic_probability_scores), -1]
-    
-    #topic_guess = df_topic_keywords.iloc[np.argmax(topic_probability_scores), Topics]
-    return topic, topic_probability_scores
-
-# Predict the topic
-mytext = "Climate change will really make california wildfires more likely"
-topic, topic_probability_scores = predict_topic(text = mytext)
-print(topic)
-print(infer_topic)
-print(topic_probability_scores)
-
-# -
-
-# ## Get similar tweets
-
-# +
-from sklearn.metrics.pairwise import euclidean_distances
-
-nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
-
-def similar_documents(text, doc_topic_probs, documents = tweet_corpus, nlp=nlp, top_n=5, verbose=False):
-    topic, x  = predict_topic(text)
-    dists = euclidean_distances(x.reshape(1, -1), doc_topic_probs)[0]
-    doc_ids = np.argsort(dists)[:top_n]
-    if verbose:        
-        print("Topic KeyWords: ", topic)
-        print("Topic Prob Scores of text: ", np.round(x, 1))
-        print("Most Similar Doc's Probs:  ", np.round(doc_topic_probs[doc_ids], 1))
-    return doc_ids, np.take(documents, doc_ids)
+#
 
 
-# -
 
-# Get similar documents
-mytext = "I blame the government"
-doc_ids, docs = similar_documents(text=mytext, doc_topic_probs=lda_output, documents = tweet_corpus, top_n=1, verbose=True)
-print('\n', docs[0][:500])
+#
+
+
+
 
 
 # ## Extract Topic Keywords
