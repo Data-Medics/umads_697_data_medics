@@ -4,4 +4,6 @@ data/
 .idea/
 poetry.lock
 credentials.yaml
+credentials_file.yaml
+lemmatized_text.csv
 
