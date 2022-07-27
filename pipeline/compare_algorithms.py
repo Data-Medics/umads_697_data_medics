@@ -185,4 +185,57 @@ ec_test_preds = eclf1.predict(X_test)
 ec_f1 = f1_score(y_test, ec_test_preds, average='macro')
 print(ec_f1)
 
+# ## Try algorithms chaining options
+
+# +
+from sklearn.preprocessing import LabelEncoder
+
+labels = ['caution_and_advice',
+         'displaced_people_and_evacuations',
+         'infrastructure_and_utility_damage',
+         'injured_or_dead_people',
+         'missing_or_found_people',
+         'not_humanitarian',
+         'other_relevant_information',
+         'requests_or_urgent_needs',
+         'rescue_volunteering_or_donation_effort',
+         'sympathy_and_support']
+
+le = LabelEncoder().fit(labels)
+# -
+
+# %%time
+# Prepate the logistic regression classifier
+clf = LogisticRegression(solver='lbfgs', multi_class='auto', random_state=random_seed, max_iter=1000)
+clf.fit(X_train, le.transform(y_train))
+
+y_lr_predict = clf.predict(X_train)
+y_lr_predict
+
+# +
+from scipy.sparse import coo_matrix, hstack
+
+X_train_lr = hstack((X_train, coo_matrix(le.transform(y_train).reshape(-1, 1))))
+X_train_lr.shape
+# -
+
+# %%time
+clf_rf = RandomForestClassifier(n_estimators=100, max_depth=10)
+clf_rf.fit(X_train_lr, le.transform(y_train))
+
+# ### Do the testing now
+
+y_lr_test = clf.predict(X_test)
+y_lr_test
+
+X_test_lr = hstack((X_test, coo_matrix(y_lr_test.reshape(-1, 1))))
+X_test_lr.shape
+
+X_test_predict = clf_rf.predict(X_test_lr)
+X_test_predict
+
+# Score on the test data
+f1 = f1_score(le.transform(y_test), X_test_predict, average='macro')
+print(f1)
+
 

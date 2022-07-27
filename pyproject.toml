@@ -42,6 +42,7 @@ lime = "*"
 tweepy = "*"
 compound-word-splitter = "^0.4"
 pyenchant = "^3.2.2"
+nx_altair = "^0.1.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
