@@ -1,17 +1,18 @@
 import streamlit as st
+import pandas as pd
 #%%
 
 #%%
-def load_image():
-    uploaded_file = st.file_uploader(label='Pick an image to test')
-    if uploaded_file is not None:
-        image_data = uploaded_file.getvalue()
-        st.image(image_data)
-
+def get_random_disaster_tweets():
+    result = st.button('Get Disaster Tweets')
+    if result:
+        st.write('Gathering Tweets')
+        random_tweets = pd.read_csv('../../data/HumAID_data_v1.0/all_combined/all_train.tsv', sep='\t').sample(frac = .2)
+        return st.write(len(random_tweets)), st.table(random_tweets.head())
 
 def main():
-    st.title('Image upload demo')
-    load_image()
+    st.title('Disaster Tweet Pipeline')
+    get_random_disaster_tweets()
 
 
 if __name__ == '__main__':

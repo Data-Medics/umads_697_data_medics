@@ -294,24 +294,38 @@ periods_one_week = int((24 * 6) / skip_interval_hours)
 period_end = dt.datetime.now()
 period_delta = dt.timedelta(hours=skip_interval_hours)
 
-df_all = None
+df_tweets = None
 
 for _ in tqdm(range(periods_one_week)):
     df = query_tweets(bearer_token, query=query + ' lang:' + language, limit=2000, end_time=period_end)
-    if df_all is None:
-        df_all = df
+    if df_tweets is None:
+        df_tweets = df
     else:
-        df_all = pd.concat([df_all, df])
+        df_tweets = pd.concat([df_tweets, df])
     period_end -= period_delta
 # -
 
-df_all['created_at'] = pd.to_datetime(df_all['created_at'])
-df_all.sample(10)
+df_tweets['created_at'] = pd.to_datetime(df_tweets['created_at'])
+df_tweets.sample(10)
 
-df_all.to_csv(product['file'], index=False)
+
+
+
 
 src_file_path = os.path.dirname(os.path.abspath("__file__"))
-filename_random_tweets = os.path.join(src_file_path, 'output\random_disaster_tweets.csv')
-df_all.to_csv(filename_random_tweets)
+filename_random_tweets = os.path.join(src_file_path, 'output\\random_disaster_tweets.csv')
+df_tweets.to_csv(filename_random_tweets)
+
+df_random = pd.read_csv('output\\random_disaster_tweets.csv')
+df_random.head()
 
 
+df_random.head(100)
+
+# ## Predict
+
+df_random['tweet_text_cleaned'] = df_random['tweet_text'].apply(lambda x: text_pre_processing(x))
+df_random['lemmatized'] = df_random['tweet_text_cleaned'].apply(lambda x: lemmatize(x, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']))
+df_random['disaster_pred'] = df_random['lemmatized'].apply(lambda x: clf.predict(bigram_vectorizer(x)))
+
+df_random.head(100)
