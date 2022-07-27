@@ -308,7 +308,9 @@ for _ in tqdm(range(periods_one_week)):
 df_all['created_at'] = pd.to_datetime(df_all['created_at'])
 df_all.sample(10)
 
-df_all.to_csv(product['file'], index=False)
+len(df_all)
+
+
 
 src_file_path = os.path.dirname(os.path.abspath("__file__"))
 filename_random_tweets = os.path.join(src_file_path, 'output\random_disaster_tweets.csv')
