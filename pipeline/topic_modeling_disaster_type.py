@@ -87,6 +87,7 @@ df_all = pd.concat([df_disaster_dev, df_disaster_train, df_disaster_test])
 
 # -
 
+df_all = df_all.sample(35000)
 df_all.head()
 
 
@@ -107,7 +108,7 @@ def text_pre_processing(x):
     # remove numbers
     text = text.replace(r'[0-9]', " ")
     # remove hashtag
-    text = re.sub(r'#','',text)
+    text = re.sub(r'#[\S]*','',text)
 #    split compound words
     text = re.sub( r"([A-Z])", r" \1", text)
 #     #remove non-ascii
@@ -139,8 +140,8 @@ def lemmatize(tweet, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
     """https://spacy.io/api/annotation"""
     tokenized = []
     doc = nlp(' '.join(tweet))
-    #tokenized.append(' '.join([token.lemma_ if token.lemma_ not in ['-PRON-'] else '' for token in doc])) #if token.pos_ in allowed_postags]))
-    tokenized.append(' '.join([token.lemma_ for token in doc])) #if token.pos_ in allowed_postags]))
+    tokenized.append(' '.join([token.lemma_ if token.lemma_ not in ['-PRON-'] else '' for token in doc if token.pos_ in allowed_postags]))
+#     tokenized.append(' '.join([token.lemma_ if token.lemma_ not in ['-PRON-'] else '' for token in doc])) #if token.pos_ in allowed_postags]))
     return ''.join(tokenized)
 
 # Do lemmatization keeping only Noun, Adj, Verb, Adverb
@@ -151,89 +152,25 @@ src_file_path = os.path.dirname(os.path.abspath("__file__"))
 filename_lemmatized = os.path.join(src_file_path, 'output\lemmatized_text.csv')
 df_all.to_csv(filename_lemmatized)
 
-# ## Train, Test, Split
+#
 
-X_train, X_test, y_train, y_test = train_test_split(df_all['lemmatized'], df_all['disaster_type'], test_size=0.25, random_state=random_seed)
+df_all.head()
 
-# ## Bigram vectorizer
-
-# Try predicting the disaster type of a corpus of tweets
-bigram_vectorizer = TfidfVectorizer(stop_words='english', min_df=3, ngram_range=(1,2))
-X_train_vectorized = bigram_vectorizer.fit_transform(X_train)
-X_train_vectorized.shape
-
-# ## Train Model
-
-clf = LogisticRegression(solver='lbfgs', multi_class='auto', random_state=random_seed, max_iter=1000)
-clf.fit(X_train_vectorized, y_train)
+#
 
 
-# ## Predict on test set
 
-##transform and predict on test set
-X_test_vectorized = bigram_vectorizer.transform(X_test)
-y_pred_lr = clf.predict(X_test_vectorized)
+# ## Vectorize
 
-lr_f1 = f1_score(y_test, y_pred_lr, average='macro')
-print(lr_f1)
-
-test_results_df = pd.DataFrame(list(zip(X_test,y_test,y_pred_lr)),columns=[['X_test','y_test','y_pred_lr']])
-
-test_results_df.head(20)
-
-# ## Confusion Matrix
-
-fig = plt.figure(figsize=(15,6))
-skplt.metrics.plot_confusion_matrix(y_test, y_pred_lr,
-                                    title="Confusion Matrix",
-                                    cmap="Oranges")
-
-# +
-import seaborn as sns
-cf_matrix = confusion_matrix(y_test, y_pred_lr)
-
-ax = sns.heatmap(cf_matrix/np.sum(cf_matrix), annot=True, 
-            fmt='.2%', cmap='Blues')
-ax.set_title('Logistic Regression Confusion Matrix');
-ax.set_xlabel('\nPredicted Disaster Type')
-ax.set_ylabel('Actual Disaster Type ');
-
-## Ticket labels - List must be in alphabetical order
-ax.xaxis.set_ticklabels(['earthquake','fire', 'flood', 'hurricane'])
-ax.yaxis.set_ticklabels(['earthquake','fire', 'flood', 'hurricane'])
-
-## Display the visualization of the Confusion Matrix.
-plt.show()
-# -
-
-# ## Precision / Recall Curve
-
-plt.rcParams["figure.figsize"] = (20,10)
-y_pred_proba_lr = clf.predict_proba(X_test_vectorized)
-fig = plt.figure(figsize=(20,10))
-skplt.metrics.plot_precision_recall_curve(y_test, y_pred_proba_lr)
-
-# ## Count Vectorizer
-
-# +
-# nltk.download('stopwords')
-# stop_words = set(stopwords.words('english'))
-# stop_words |= {"attach", "ahead", "rt",'www','tinyurl','com', 'https', 'http', 
-#                '&amp','amp', 'rt', 'bit', 'ly', 'bitly', 'trump', 'byte', 'bytes', 'donald','emoji', }
-
-# vectorizer = CountVectorizer(analyzer='word',       
-#                              min_df=10,                        # minimum reqd occurences of a word 
-#                              stop_words=stop_words,             # remove stop words
-#                              lowercase=False,                   # convert all words to lowercase
-#                              #token_pattern='[a-zA-Z0-9]{3,}',  # num chars > 3
-#                              # max_features=50000,             # max number of uniq words
-#                              ngram_range = (1,2)
-#                             )
-
-# vectorizer = vectorizer.fit(df_all['lemmatized'])
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
+stop_words |= {"attach", "ahead", "rt",'www','tinyurl','com', 'https', 'http', 
+               '&amp','amp', 'rt', 'bit', 'ly', 'bitly', 'trump', 'byte', 'bytes', 'donald','emoji', }
 # +
 # Build Disaster Type LDA Model
 disaster_types = ['earthquake','fire', 'flood', 'hurricane']
+
+
 
 vectorizer_params = {'analyzer' : 'word',
                     'min_df' : 10,
@@ -251,7 +188,7 @@ hurricane_vectorizer = CountVectorizer(**vectorizer_params).fit(list(df_all[df_a
 # ## LDA Model
 
 # +
-params = {'n_components' : 5,
+params_earthquake = {'n_components' : 3,
           'max_iter' : 10,
           'learning_method' : 'online',
           'random_state' : random_seed,
@@ -260,10 +197,37 @@ params = {'n_components' : 5,
           'n_jobs' : -1,
           'learning_decay' : .5}
 
-lda_model_earthquake = LatentDirichletAllocation(**params)
-lda_model_fire = LatentDirichletAllocation(**params)
-lda_model_flood = LatentDirichletAllocation(**params)
-lda_model_hurricane = LatentDirichletAllocation(**params)
+params_fire = {'n_components' : 3,
+          'max_iter' : 10,
+          'learning_method' : 'online',
+          'random_state' : random_seed,
+          'batch_size' : 128,
+          'evaluate_every' : -1,
+          'n_jobs' : -1,
+          'learning_decay' : .5}
+
+params_flood = {'n_components' : 3,
+          'max_iter' : 10,
+          'learning_method' : 'online',
+          'random_state' : random_seed,
+          'batch_size' : 128,
+          'evaluate_every' : -1,
+          'n_jobs' : -1,
+          'learning_decay' : .5}
+
+params_hurricane = {'n_components' : 3,
+          'max_iter' : 10,
+          'learning_method' : 'online',
+          'random_state' : random_seed,
+          'batch_size' : 128,
+          'evaluate_every' : -1,
+          'n_jobs' : -1,
+          'learning_decay' : .5}
+
+lda_model_earthquake = LatentDirichletAllocation(**params_earthquake)
+lda_model_fire = LatentDirichletAllocation(**params_fire)
+lda_model_flood = LatentDirichletAllocation(**params_flood)
+lda_model_hurricane = LatentDirichletAllocation(**params_hurricane)
 
 # -
 
@@ -314,6 +278,7 @@ print("Perplexity Hurricane: ", lda_model_hurricane.perplexity(hurricane_text_ve
 
 # ## Dominant Topics
 
+# +
 def get_dominant_topics(lda_model, disaster_type, vectorized_text):
 
     lda_output = lda_model.transform(vectorized_text)
@@ -342,21 +307,25 @@ def get_dominant_topics(lda_model, disaster_type, vectorized_text):
     # Apply Style
     df_document_topics = df_document_topic.head(15).style.applymap(color_green).applymap(make_bold)
     return df_document_topics
- get_dominant_topics(lda_model_earthquake, 'earthquake', earthquake_text_vectorized)
+
+get_dominant_topics(lda_model_earthquake, 'earthquake', earthquake_text_vectorized)
+
+get_dominant_topics(lda_model_fire, 'fire', fire_text_vectorized)
+
+get_dominant_topics(lda_model_flood, 'flood', flood_text_vectorized)
+
+get_dominant_topics(lda_model_hurricane, 'hurricane', hurricane_text_vectorized)
 
 
- get_dominant_topics(lda_model_fire, 'fire', fire_text_vectorized)
-
- get_dominant_topics(lda_model_flood, 'flood', flood_text_vectorized)
-
- get_dominant_topics(lda_model_hurricane, 'hurricane', hurricane_text_vectorized)
-
+# -
 
 # ## Topic Distribution
 
-# +
 def get_topic_distribution(lda_model, vectorizer):
 
+    # Get topic names
+    topicnames = ["Topic" + str(i) for i in range(lda_model.n_components)]
+    
     # Topic-Keyword Matrix
     df_topic_keywords = pd.DataFrame(lda_model.components_)
 
@@ -368,19 +337,17 @@ def get_topic_distribution(lda_model, vectorizer):
     return df_topic_keywords
 
 
-# -
+get_topic_distribution(lda_model_earthquake, earthquake_vectorizer)
 
-get_topic_distribution(lda_model_earthquake, earthquake_vectorizer):
+get_topic_distribution(lda_model_fire, fire_vectorizer)
 
-get_topic_distribution(lda_model_fire, fire_vectorizer):
+get_topic_distribution(lda_model_flood, flood_vectorizer)
 
-get_topic_distribution(lda_model_flood, flood_vectorizer):
-
-get_topic_distribution(lda_model_hurricane, hurricane_vectorizer):
+get_topic_distribution(lda_model_hurricane, hurricane_vectorizer)
 
 
 # Show top n keywords for each topic
-def show_topics(vectorizer=vectorizer, lda_model=lda_model, n_words=20):
+def show_topics(vectorizer, lda_model, n_words=20):
     keywords = np.array(vectorizer.get_feature_names())
     topic_keywords = []
     for topic_weights in lda_model.components_:
@@ -390,8 +357,9 @@ def show_topics(vectorizer=vectorizer, lda_model=lda_model, n_words=20):
     df_topic_keywords.columns = ['Word '+str(i) for i in range(df_topic_keywords.shape[1])]
     df_topic_keywords.index = ['Topic '+str(i) for i in range(df_topic_keywords.shape[0])]
     return df_topic_keywords
-show_topics(vectorizer=earthquake_vectorizer, lda_model=lda_model_earthquake, n_words=20)
 
+
+show_topics(vectorizer=earthquake_vectorizer, lda_model=lda_model_earthquake, n_words=20)
 
 show_topics(vectorizer=fire_vectorizer, lda_model=lda_model_fire, n_words=20)
 
@@ -402,37 +370,5 @@ show_topics(vectorizer=hurricane_vectorizer, lda_model=lda_model_hurricane, n_wo
 #
 
 
-
-#
-
-
-
-
-
-# ## Extract Topic Keywords
-
-# Show top n keywords for each topic
-def show_topics(vectorizer=vectorizer, lda_model=lda_model, n_words=20):
-    keywords = np.array(vectorizer.get_feature_names())
-    topic_keywords = []
-    for topic_weights in lda_model.components_:
-        top_keyword_locs = (-topic_weights).argsort()[:n_words]
-        topic_keywords.append(keywords.take(top_keyword_locs))
-    return topic_keywords
-topic_keywords = show_topics(vectorizer=vectorizer, lda_model=best_lda_model, n_words=100)
-# Topic - Keywords Dataframe
-df_topic_keywords = pd.DataFrame(topic_keywords)
-# df_topic_keywords.columns = ['Word '+str(i) for i in range(df_topic_keywords.shape[1])]
-# df_topic_keywords.index = ['Topic '+str(i) for i in range(df_topic_keywords.shape[0])]
-df_topic_keywords = df_topic_keywords.transpose()
-
-df_topic_keywords.columns = [f"{'Topic: ' if idx>=0 else ''}{col}" 
-              for idx, col in enumerate(df_topic_keywords.columns)]
-# topics_file = os.path.join(src_file_path, 'output\lda_topics.csv')
-# df_all.to_csv(filename)
-df_topic_keywords
-
-topics_file = os.path.join(src_file_path, 'output\lda_topics.csv')
-df_topic_keywords.to_csv(topics_file)
 
 
