@@ -326,6 +326,8 @@ df_random.head(100)
 
 df_random['tweet_text_cleaned'] = df_random['tweet_text'].apply(lambda x: text_pre_processing(x))
 df_random['lemmatized'] = df_random['tweet_text_cleaned'].apply(lambda x: lemmatize(x, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']))
-df_random['disaster_pred'] = df_random['lemmatized'].apply(lambda x: clf.predict(bigram_vectorizer(x)))
+random_tweets_vectorized = bigram_vectorizer.transform(df_random['lemmatized'].tolist())
+preds = clf.predict(random_tweets_vectorized)
 
-df_random.head(100)
+combined = pd.DataFrame(list(zip(df_random['tweet_text'],preds)))
+combined.head(200)
