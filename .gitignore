@@ -6,4 +6,5 @@ poetry.lock
 credentials.yaml
 credentials_file.yaml
 lemmatized_text.csv
+random_disaster_tweets.csv
 
