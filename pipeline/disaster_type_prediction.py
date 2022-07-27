@@ -230,7 +230,7 @@ skplt.metrics.plot_precision_recall_curve(y_test, y_pred_proba_lr)
 # ## Get Random Disaster Tweets
 
 # +
-with open(credentials_file, 'r') as stream:
+with open('credentials_file.yaml', 'r') as stream:
     credentials = yaml.safe_load(stream)
 
 bearer_token = credentials['twitter_bearer_token']
@@ -286,6 +286,9 @@ def query_tweets(bearer_token, query, limit=1000, end_time=None):
 
 # +
 # %%time
+skip_interval_hours = 2
+language = 'en'
+query = 'earthquake OR fire OR flood OR hurricane'
 # We cannot query for more than a week back - the API returns an error
 periods_one_week = int((24 * 6) / skip_interval_hours)
 period_end = dt.datetime.now()
@@ -294,7 +297,7 @@ period_delta = dt.timedelta(hours=skip_interval_hours)
 df_all = None
 
 for _ in tqdm(range(periods_one_week)):
-    df = query_tweets(bearer_token, query=query + ' lang:' + language, limit=limit, end_time=period_end)
+    df = query_tweets(bearer_token, query=query + ' lang:' + language, limit=2000, end_time=period_end)
     if df_all is None:
         df_all = df
     else:
