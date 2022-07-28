@@ -87,7 +87,6 @@ df_all = pd.concat([df_disaster_dev, df_disaster_train, df_disaster_test])
 
 # -
 
-df_all = df_all.sample(35000)
 df_all.head()
 
 
@@ -165,7 +164,8 @@ df_all.head()
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
 stop_words |= {"attach", "ahead", "rt",'www','tinyurl','com', 'https', 'http', 
-               '&amp','amp', 'rt', 'bit', 'ly', 'bitly', 'trump', 'byte', 'bytes', 'donald','emoji', }
+               '&amp','amp', 'rt', 'bit', 'ly', 'bitly', 'trump', 'byte', 'bytes', 
+               'donald','emoji','earthquake','fire','flood','hurricane'}
 # +
 # Build Disaster Type LDA Model
 disaster_types = ['earthquake','fire', 'flood', 'hurricane']
@@ -347,7 +347,7 @@ get_topic_distribution(lda_model_hurricane, hurricane_vectorizer)
 
 
 # Show top n keywords for each topic
-def show_topics(vectorizer, lda_model, n_words=20):
+def show_topics(vectorizer, lda_model, n_words=20, dname=''):
     keywords = np.array(vectorizer.get_feature_names())
     topic_keywords = []
     for topic_weights in lda_model.components_:
@@ -355,7 +355,7 @@ def show_topics(vectorizer, lda_model, n_words=20):
         topic_keywords.append(keywords.take(top_keyword_locs))
     df_topic_keywords = pd.DataFrame(topic_keywords)
     df_topic_keywords.columns = ['Word '+str(i) for i in range(df_topic_keywords.shape[1])]
-    df_topic_keywords.index = ['Topic '+str(i) for i in range(df_topic_keywords.shape[0])]
+    df_topic_keywords.index = [str(dname)+'_Topic '+str(i) for i in range(df_topic_keywords.shape[0])]
     return df_topic_keywords
 
 
@@ -367,8 +367,26 @@ show_topics(vectorizer=flood_vectorizer, lda_model=lda_model_flood, n_words=20)
 
 show_topics(vectorizer=hurricane_vectorizer, lda_model=lda_model_hurricane, n_words=20)
 
-#
+# ## Extract Topic Keywords
 
 
+
+# +
+topics_earthquake = pd.DataFrame(show_topics(vectorizer=earthquake_vectorizer, lda_model=lda_model_earthquake, n_words=100, dname='earthquake'))
+topics_fire = pd.DataFrame(show_topics(vectorizer=fire_vectorizer, lda_model=lda_model_fire, n_words=100, dname='fire'))
+topics_flood = pd.DataFrame(show_topics(vectorizer=flood_vectorizer, lda_model=lda_model_flood, n_words=100, dname='flood'))
+topics_hurricane = pd.DataFrame(show_topics(vectorizer=hurricane_vectorizer, lda_model=lda_model_hurricane, n_words=100, dname='hurricane'))
+
+df_topic_keywords = pd.concat([topics_earthquake,topics_fire,topics_flood,topics_hurricane],axis=0)
+    # df_topic_keywords.columns = ['Word '+str(i) for i in range(df_topic_keywords.shape[1])]
+    # df_topic_keywords.index = ['Topic '+str(i) for i in range(df_topic_keywords.shape[0])]
+df_topic_keywords = df_topic_keywords.transpose()
+df_topic_keywords.head()
+# -
+
+
+
+topics_file = os.path.join(src_file_path, 'output\lda_topics_disastertype.csv')
+df_topic_keywords.to_csv(topics_file)
 
 
