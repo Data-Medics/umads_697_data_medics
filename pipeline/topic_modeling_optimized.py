@@ -16,12 +16,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.model_selection import GridSearchCV
 from pprint import pprint
 
-# +
 import matplotlib.pyplot as plt
 # %matplotlib inline
-
-
-# -
 
 random_seed = 10
 
