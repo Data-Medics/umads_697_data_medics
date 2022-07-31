@@ -114,4 +114,13 @@ The pipelines executed with 'ploomber build" from the 'pipeline' folder perform 
   - Visualize the disaster intensity over time
 - If time permits, load the data in [Streamlit](https://streamlit.io/), make the above analysis as an online app running there
 
-
+## Workflow pipeline
+- Tweets Vectorization
+  - Regression on categories 
+  - Regression on disaster/non-disaster tweet
+  - Neural Network regression on categories
+  - Words importance
+  - Topic Modeling
+    - Recent tweets retrieval
+    - Recent tweets analysis - affected locations, visualizations, recommended actions
+      - Streamlit local run and deployment

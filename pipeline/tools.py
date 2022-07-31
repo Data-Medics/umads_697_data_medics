@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
-import re
-
+from tqdm import tqdm
 from collections import Counter
 
 
@@ -19,6 +18,18 @@ def get_locations(nlp, df, limit_most_common=100):
     locations_set = {l.lower() for l in df_locs_most_common['location'] if not l.startswith('@')}
 
     return df_locs, locations_set
+
+
+def generate_dense_features(tokenized_texts, model):
+    result = []
+    for tokens in tqdm(tokenized_texts):
+        filtered_tokens = [t for t in tokens if t in model.wv.index_to_key]
+        if len(filtered_tokens) > 0:
+            vec = np.mean(model.wv[filtered_tokens], axis=0)
+        else:
+            vec = np.zeros(model.wv.vector_size)
+        result.append(vec)
+    return np.array(result)
 
 
 class Tokenizer:
