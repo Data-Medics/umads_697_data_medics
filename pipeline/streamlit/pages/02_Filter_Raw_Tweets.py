@@ -9,6 +9,7 @@ import spacy
 from spacy.language import Language
 import re
 from sklearn.linear_model import LogisticRegression
+import itertools
 
 def space(num_lines=1):
     """Adds empty lines to the Streamlit app."""
@@ -35,6 +36,11 @@ def get_tweet_class_prediction():
 	tweet_class_preds = clf_model.predict(raw_tweets_vectorized)
 
 	df["predicted_class"] = tweet_class_preds
+
+	# add spacy nlp
+	df["spacy_text"] = df["tweet_text"].apply(nlp)
+
+	df["locations"] = df["spacy_text"].apply(lambda a: [ent.text for ent in a.ents if ent.label_ in ['LOC']])
 
 	return df
 
@@ -67,7 +73,14 @@ tweet_data_filtered = tweet_data[(tweet_data.predicted_class.isin(tweet_types)) 
 
 tweet_data_filtered["created_at"] = pd.to_datetime(tweet_data_filtered.created_at).apply(lambda x: x.date())
 
+locations = list(itertools.chain.from_iterable([a for a in tweet_data_filtered["locations"].values if len(a) > 0]))
+
+location_list = st.multiselect("Specify a location", locations, locations[:])
+
+weet_data_filtered = tweet_data_filtered[tweet_data_filtered.locations.isin(location_list)]
+
 tweet_data_filtered = tweet_data_filtered[["created_at", "tweet_text", "name", "tweet_count"]].copy()
+
 
 st.write(st.table(tweet_data_filtered))
 
