@@ -45,6 +45,65 @@ tasks:
      params:
        random_seed: 42
 
+   - source: recent_tweets.py
+     name: recent_tweets_wildfire
+     product:
+       nb: output/recent_tweets_wildfire.ipynb
+       file: output/recent_tweets_wildfire.csv
+     params:
+       disaster_type: Wildfire
+       query: "wildfire (donate OR dead tall OR burn OR fire OR forest OR damage)"
+       language: '{{query_language}}'
+       limit: 2000
+       skip_interval_hours: 2
+       credentials_file: '{{credentials_file}}'
+
+   - source: recent_tweets.py
+     name: recent_tweets_earthquake
+     product:
+       nb: output/recent_tweets_earthquake.ipynb
+       file: output/recent_tweets_earthquake.csv
+     params:
+       disaster_type: Earthquake
+       query: "earthquake (pray OR victim OR donate OR resque OR damage OR magnitude)"
+       language: '{{query_language}}'
+       limit: 2000
+       skip_interval_hours: 2
+       credentials_file: '{{credentials_file}}'
+
+   - source: recent_tweets.py
+     name: recent_tweets_flood
+     product:
+       nb: output/recent_tweets_flood.ipynb
+       file: output/recent_tweets_flood.csv
+     params:
+       disaster_type: Flood
+       query: "flood (relief OR water OR donate OR dead tall OR resque OR destroy)"
+       language: '{{query_language}}'
+       limit: 2000
+       skip_interval_hours: 2
+       credentials_file: '{{credentials_file}}'
+
+   - source: recent_tweets.py
+     name: recent_tweets_hurricane
+     product:
+       nb: output/recent_tweets_hurricane.ipynb
+       file: output/recent_tweets_hurricane.csv
+     params:
+       disaster_type: Hurricane
+       query: "hurricane (donate OR storm OR cyclone OR damage OR evacuation OR destroy)"
+       language: '{{query_language}}'
+       limit: 2000
+       skip_interval_hours: 2
+       credentials_file: '{{credentials_file}}'
+
+#   - source: tweets_timeline.py
+#     name: tweets_timeline_fire
+#     product:
+#       nb: output/tweets_timeline_fire.ipynb
+#     params:
+#       random_seed: 42
+
 #  - source: report_supervised.py
 #    name: report_supervised
 #    product:
