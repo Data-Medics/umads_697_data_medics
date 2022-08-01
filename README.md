@@ -116,9 +116,9 @@ The pipelines executed with 'ploomber build" from the 'pipeline' folder perform 
 
 ## Workflow pipeline
 - Tweets Vectorization
-  - Regression on categories 
-  - Regression on disaster/non-disaster tweet
-  - Neural Network regression on categories
+  - Classification on categories 
+  - Classification on disaster/non-disaster tweet
+  - Neural Network classification on categories
   - Words importance
   - Topic Modeling
     - Recent tweets retrieval
