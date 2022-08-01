@@ -1,27 +1,38 @@
-# # Building tweet vectorizer using a standard TweetTokenizer
+# # Doing an exploration on recent disaster tweets
 
 # +
 import pandas as pd
-from sklearn.metrics import f1_score
 import pickle
 
-from sklearn.feature_extraction.text import TfidfVectorizer
-from nltk.tokenize import TweetTokenizer
-from sklearn.linear_model import LogisticRegression
+import spacy
+from spacy import displacy
+
+from tools import extract_assign_location
 
 # + tags=["parameters"]
-upstream = []
+upstream = ['category_classification_models',
+            'recent_tweets_wildfire']
 random_seed = 42
 # -
 
-# ## Read the train and test data
+# ## Load the sample of recent tweets
+
+
+
+# ## Extract the location from the tweet sample
+
+# + active=""
+# df_disaster_tweets, df_locs_most_common = extract_assign_location(df_disaster_tweets, number_most_common=10)
+# -
+
+# ## Plot the intensity for each catagory, and for a particular location
 
 # +
-df_train = pd.read_csv('../data/HumAID_data_v1.0/all_combined/all_train.tsv', sep='\t')
-df_test = pd.read_csv('../data/HumAID_data_v1.0/all_combined/all_test.tsv', sep='\t')
+df_plot = df_all.copy()
 
-df_train.dropna(inplace=True)
-df_test.dropna(inplace=True)
-
-df_train.sample(5)
-# -
+df_plot['created_at'] = df_plot['created_at'].dt.floor('8H') # Round to 8 hours
+df_plot['count'] = 1
+df_group_plot = df_plot[['created_at', 'class_label', 'count']].groupby(['created_at', 'class_label']).count().reset_index()
+df_group_plot['created_at'] = pd.to_datetime(df_group_plot['created_at'])
+df_group_plot.head()
+#sns.lineplot(data=df_all.dropna(), x='created_at', y='class_label')

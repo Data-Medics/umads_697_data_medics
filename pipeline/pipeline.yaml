@@ -52,7 +52,7 @@ tasks:
        file: output/recent_tweets_wildfire.csv
      params:
        disaster_type: Wildfire
-       query: "wildfire (donate OR dead tall OR burn OR fire OR forest OR damage)"
+       query: "wildfire (donate OR (dead toll) OR burn OR fire OR forest OR damage)"
        language: '{{query_language}}'
        limit: 2000
        skip_interval_hours: 2
@@ -78,7 +78,7 @@ tasks:
        file: output/recent_tweets_flood.csv
      params:
        disaster_type: Flood
-       query: "flood (relief OR water OR donate OR dead tall OR resque OR destroy)"
+       query: "flood (relief OR water OR donate OR (dead toll) OR resque OR destroy)"
        language: '{{query_language}}'
        limit: 2000
        skip_interval_hours: 2
@@ -103,177 +103,4 @@ tasks:
 #       nb: output/tweets_timeline_fire.ipynb
 #     params:
 #       random_seed: 42
-
-#  - source: report_supervised.py
-#    name: report_supervised
-#    product:
-#      nb: output/report_supervised.ipynb
-#    params:
-#      lookback_days: 10
-#
-#  - source: report_topics.py
-#    name: report_topics
-#    product:
-#      nb: output/report_topics.ipynb
-#    params:
-#      lookback_days: 10
-#
-#  - source: report_unsupervised.py
-#    name: report_unsupervised
-#    product:
-#      nb: output/report_unsupervised.ipynb
-#    params:
-#      lookback_days: 10
-#   - source: tokenization.py
-#     name: tokenization
-#     product:
-#       nb: output/tokenization.ipynb
-#       vectorizer: output/vectorizer.pkl
-#       vocab: output/vocab.pkl
-#       stopwords: output/stopwords.csv
-#     params:
-#       random_seed: 42
-
-# - source: happy_path_exploration.py
-#   name: happy_path_exploration
-#   product:
-#     nb: output/happy_path_exploration.ipynb
-#   params:
-#     random_seed: 42
-
-#  - source: compare_algorithms.py
-#    name: compare_algorithms.py
-#    product:
-#      nb: output/compare_algorithms.ipynb
-#    params:
-#      random_seed: 42
-
-#  - source: twitter_sample.py
-#    name: twitter_random_sample
-#    product:
-#      nb: output/twitter_random_sample.ipynb
-#      file: output/twitter_random_sample.csv
-#    params:
-#      query: 'the'
-#      language: '{{query_language}}'
-#      limit: 10000
-#      credentials_file: '{{credentials_file}}'
-
-#  - source: twitter_sample.py
-#    name: twitter_wildfire_sample
-#    product:
-#      nb: output/twitter_wildfire_sample.ipynb
-#      file: output/twitter_wildfire_sample.csv
-#    params:
-#      query: 'wildfire'
-#      language: '{{query_language}}'
-#      limit: 10000
-#      credentials_file: '{{credentials_file}}'
-#
-#  - source: twitter_sample.py
-#    name: twitter_earthquake_sample
-#    product:
-#      nb: output/twitter_earthquake_sample.ipynb
-#      file: output/twitter_earthquake_sample.csv
-#    params:
-#      query: 'earthquake'
-#      language: '{{query_language}}'
-#      limit: '{{query_limit}}'
-#      credentials_file: '{{credentials_file}}'
-
-#  - source: twitter_sample.py
-#    name: twitter_flood_sample
-#    product:
-#      nb: output/twitter_flood_sample.ipynb
-#      file: output/twitter_flood_sample.csv
-#    params:
-#      query: 'flood'
-#      language: '{{query_language}}'
-#      limit: '{{query_limit}}'
-#      credentials_file: '{{credentials_file}}'
-#
-#  - source: twitter_sample.py
-#    name: twitter_disaster_sample
-#    product:
-#      nb: output/twitter_disaster_sample.ipynb
-#      file: output/twitter_disaster_sample.csv
-#    params:
-#      query: '(wildfire OR flood OR earthquake)'
-#      language: '{{query_language}}'
-#      limit: '{{query_limit}}'
-#      credentials_file: '{{credentials_file}}'
-
-#  - source: disaster_binary.py
-#    name: disaster_binary
-#    product:
-#      nb: output/disaster_binary.ipynb
-#    params:
-#      random_seed: 42
-#
-#  - source: embedding_bag_nn.py
-#    name: embedding_bag_nn
-#    product:
-#      nb: output/embedding_bag_nn.ipynb
-#    params:
-#      nrows: 500
-
-# - source: twitter_sample_timeline.py
-#   name: twitter_sample_timeline
-#   product:
-#     nb: output/twitter_wildfire_timeline.ipynb
-#     file: output/twitter_wildfire_timeline.csv
-#   params:
-#     query: 'wildfire'
-#     language: '{{query_language}}'
-#     limit: 2000
-#     skip_interval_hours: 2
-#     random_seed: 42
-#     credentials_file: '{{credentials_file}}'
-
-#  - source: recommended_actions_upstream.py
-#    name: recommended_actions_upstream
-#    product:
-#      nb: output/recommended_actions_upstream.ipynb
-#      file: output/twitter_actions.csv
-#    params:
-#      query: '(wildfire OR flood OR earthquake)'
-#      language: 'en'
-#      limit: 500
-#      credentials_file: "credentials.yaml"
-#
-#  - source: recommended_actions.py
-#    name: recommended_actions
-#    product:
-#      nb: output/recommended_actions_upstream.ipynb
-
-############################################################
-# pipeline to run the full flow
-# more specifics can be found here:
-
-# train the model and vectorizer
-# save the output to output/fitted_models
-
-#  - source: train_logistic_regression.py
-#    name: train_logistic_regression
-#    product:
-#      nb: output/train_logistic_regression.ipynb
-
-# collect the current tweets
-# these are the tweets we will analyze for actions
-#  - source: recommended_actions_upstream.py
-#    name: recommended_actions_upstream
-#    product:
-#      nb: output/recommended_actions_upstream.ipynb
-#      file: output/twitter_actions.csv
-#    params:
-#      disaster_types: ["wildfire", "flood", "earthquake"]
-#      action_types: ["volunteer", "donate", "evacuate"]
-#      language: 'en'
-#      limit: 500
-#      credentials_file: "credentials.yaml"
-#
-#  - source: recommended_actions.py
-#    name: recommended_actions
-#    product:
-#      nb: output/recommended_actions.ipynb
 

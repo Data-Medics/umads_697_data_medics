@@ -4,6 +4,8 @@ from tqdm import tqdm
 from collections import Counter
 import tweepy
 import datetime as dt
+import spacy
+from spacy import displacy
 
 
 def get_locations(nlp, df, limit_most_common=100):
@@ -121,3 +123,23 @@ def retrieve_tweets(bearer_token, skip_interval_hours, query, language, limit):
         period_end -= period_delta
 
     return df_all
+
+
+def extract_assign_location(df_disaster_tweets, number_most_common=10):
+    nlp = spacy.load('xx_ent_wiki_sm')
+
+    # Go through the dev data and collect all the locations
+    locations = []
+
+    for _, row in tqdm(df_disaster_tweets.iterrows()):
+        doc = nlp(row['tweet_text'])
+        locations.append([ent.text for ent in doc.ents if ent.label_ in ['LOC']])
+
+    df_disaster_tweets['location'] = locations
+
+    locations_flatten = sum(df_disaster_tweets['location'].tolist(), [])
+    locations_count = Counter(locations_flatten).most_common(number_most_common)
+
+    df_locs_most_common = pd.DataFrame(locations_count, columns=['location', 'count'])
+
+    return df_disaster_tweets, df_locs_most_common
