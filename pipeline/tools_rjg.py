@@ -7,7 +7,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
 def generate_disaster_type_dataframe(disaster_types: tuple = ('earthquake', 'fire', 'flood', 'hurricane'),
-                                     dev_train_test: tuple = ('dev', 'train', 'test', 'hurricane')):
+                                     dev_train_test: tuple = ('dev', 'train', 'test')):
     """function to gather all the disaster tweets, combine them and label them accordingly"""
     combined_df = pd.DataFrame()
     disaster_dict = {}
@@ -56,3 +56,27 @@ def lemmatize_tweet_text(tweet_text: str, nlp=spacy.load('en_core_web_sm', disab
     return ''.join(tokenized)
 
 
+def get_dominant_topics(fitted_lda_model, vectorized_text):
+    """ extract the dominant topics from each set of tweets"""
+    lda_output = fitted_lda_model.transform(vectorized_text)
+    topicnames = ["Topic" + str(i) for i in range(fitted_lda_model.n_components)]
+    # index names
+    docnames = ["Doc" + str(i) for i in range(vectorized_text.toarray().shape()[0])]
+    # Make the pandas dataframe
+    df_document_topic = pd.DataFrame(np.round(lda_output, 2), columns=topicnames, index=docnames)
+    # Get dominant topic for each document
+    dominant_topic = np.argmax(df_document_topic.values, axis=1)
+    df_document_topic['dominant_topic'] = dominant_topic
+
+    # Styling
+    def color_green(val):
+        color = 'green' if val > .1 else 'black'
+        return 'color: {col}'.format(col=color)
+
+    def make_bold(val):
+        weight = 700 if val > .1 else 400
+        return 'font-weight: {weight}'.format(weight=weight)
+
+    # Apply Style
+    df_document_topics = df_document_topic.head(15).style.applymap(color_green).applymap(make_bold)
+    return df_document_topics
