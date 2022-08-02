@@ -147,10 +147,34 @@ tasks:
     product:
       nb: output/recommended_actions.ipynb
 
-#   - source: tweets_timeline.py
-#     name: tweets_timeline_fire
-#     product:
-#       nb: output/tweets_timeline_fire.ipynb
-#     params:
-#       random_seed: 42
+   - source: tweets_timeline.py
+     name: tweets_timeline_fire
+     product:
+       nb: output/tweets_timeline_fire.ipynb
+     params:
+       random_seed: 42
+       disaster_kind: recent_tweets_wildfire
 
+   - source: tweets_timeline.py
+     name: tweets_timeline_earthquake
+     product:
+       nb: output/tweets_timeline_earthquake.ipynb
+     params:
+       random_seed: 42
+       disaster_kind: recent_tweets_earthquake
+
+   - source: tweets_timeline.py
+     name: tweets_timeline_flood
+     product:
+       nb: output/tweets_timeline_flood.ipynb
+     params:
+       random_seed: 42
+       disaster_kind: recent_tweets_flood
+
+   - source: tweets_timeline.py
+     name: tweets_timeline_hurricane
+     product:
+       nb: output/tweets_timeline_hurricane.ipynb
+     params:
+       random_seed: 42
+       disaster_kind: recent_tweets_hurricane
