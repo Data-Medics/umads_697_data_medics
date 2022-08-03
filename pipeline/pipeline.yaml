@@ -52,7 +52,7 @@ tasks:
        file: output/recent_tweets_wildfire.csv
      params:
        disaster_type: Wildfire
-       query: "wildfire (donate OR (dead toll) OR burn OR fire OR forest OR damage)"
+       query: "wildfire (donate OR (death toll) OR burn OR fire OR forest OR damage)"
        language: '{{query_language}}'
        limit: 2000
        skip_interval_hours: 2
@@ -65,7 +65,7 @@ tasks:
        file: output/recent_tweets_earthquake.csv
      params:
        disaster_type: Earthquake
-       query: "earthquake (pray OR victim OR donate OR resque OR damage OR magnitude)"
+       query: "earthquake (pray OR victim OR donate OR rescue OR damage OR magnitude)"
        language: '{{query_language}}'
        limit: 2000
        skip_interval_hours: 2
@@ -78,7 +78,7 @@ tasks:
        file: output/recent_tweets_flood.csv
      params:
        disaster_type: Flood
-       query: "flood (relief OR water OR donate OR (dead toll) OR resque OR destroy)"
+       query: "flood (relief OR water OR donate OR (death toll) OR rescue OR destroy)"
        language: '{{query_language}}'
        limit: 2000
        skip_interval_hours: 2
