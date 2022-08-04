@@ -70,28 +70,29 @@ jupyter notebook .
 The pipelines executed with 'ploomber build" from the 'pipeline' folder perform the following:
 - Vectorizing the tweets 
   - TF/IDF sparse vectors with bigrams
-    - TODO: Add stemming, better stop words removal
+    - Add stemming, better stop words removal
   - Word embedding dense vectors with Word2vec
 - Predicting the class labels from the tweet payload
   - Implemented basic linear regression
     - Achieved F1 score of 0.71 using TF/IDF vectors with bigrams
     - Word embedding dense vectors produced F1 of 0.63
-  - TODO: Implement other algorithms (Random Forest, XGBoost), see if they improve the score
-  - TODO: Implement a Neural Network see if it improves the score
+  - Implement other algorithms (Random Forest, XGBoost, MultinomialNB, Voting Classifier), see if they improve the score
+  - Implement a Neural Network see if it improves the score
 - Predicting the disaster types from the tweet payload
   - Implemented basic linear regression
     - Achieved F1 score of 0.95 using TF/IDF vectors with bigrams
-  - TODO: Implement other algorithms (Random Forest, XGBoost), see if they improve the score
-  - TODO: Implement a Neural Network see if it improves the score
-- TODO: Predict if a tweets is a disaster/nom-disaster tweet, leverage the category labels for that
-- TODO: Do a topic modeling based on the tweets (elaborate)
-- TODO: Do an unsupervised modeling based on the tweets (elaborate)
-- Extracting locations from the tweets
-- Visualizing the locations of the tweets on the world map, showing where the disasters are happening based on a tweet stream
-- Explaining why the tweet is predicted as a label, what words contributed for that
+- Predict if a tweets is a disaster/nom-disaster tweet, leverage the category labels for that
+- Do a topic modeling based on the tweets (elaborate)
+- Obtain a sample of the recent disaster-related tweets (past one week) using the topic keywords: 
+    - TODO: Identifying what disasters are going in the world, what is the intensity, are there some dominant disasters
+    - Visualizing the locations of the tweets on the world map, showing where the disasters are happening based on a tweet stream
+    - Categorizing the tweets for a disaster - i.e. caution and advise, infrastructure damage, resque effort 
+    - Visualizing the locations affected, what locations are connected, what category they belong to
+    - Visualizing how the disasters for the top progress over time, when is the peaks, how the categories change
+- TODO: Explaining why the tweet is predicted as a label, what words contributed for that
 - TODO: Aggregate and explain what features are contributing for the class predictions 
-- TODO: Extract the actions to be performed when a disaster is going on:
-  - TODO: Extract the names of the organizations that deal with the disasters
+- Extract the actions to be performed when a disaster is going on:
+  - Extract the names of the organizations that deal with the disasters
   - TODO: Extract the actions these organizations recommend/advise (the verbs)
   - TODO: Extract the respective objects for these actions (i.e. destinations etc)
 
@@ -113,4 +114,13 @@ The pipelines executed with 'ploomber build" from the 'pipeline' folder perform 
   - Visualize the disaster intensity over time
 - If time permits, load the data in [Streamlit](https://streamlit.io/), make the above analysis as an online app running there
 
-
+## Workflow pipeline
+- Tweets Vectorization
+  - Classification on categories 
+  - Classification on disaster/non-disaster tweet
+  - Neural Network classification on categories
+  - Words importance
+  - Topic Modeling
+    - Recent tweets retrieval
+    - Recent tweets analysis - affected locations, visualizations, recommended actions
+      - Streamlit local run and deployment
