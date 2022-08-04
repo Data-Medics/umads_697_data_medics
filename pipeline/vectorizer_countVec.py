@@ -42,7 +42,9 @@ stop_words |= {"attach", "ahead", "rt",'www','tinyurl','com', 'https', 'http',
                '&amp','amp', 'rt', 'bit', 'ly', 'bitly', 'trump', 'byte', 'bytes',
                'donald','emoji','earthquake','fire','flood','hurricane','wildfire','people','eqnz','water',
                'mexico','forest','greecefire','harvey','bahama','keralaflood','lanka','florence','dorian','irma',
-               'ecuador'}
+               'ecuador','italian','terremoto','azad','mirpur','kaikoura','indian','islamabad','northern','woolsey',
+               'greece','southern','malibu','ymmfire','chico','chengannur','lakh','donate lakh','onam','floridian','maria',
+               'mozambique','zimbabwe','nebraska','matthew','haiti','crore','greek'}
 
 # + tags=[]
 # Build Disaster Type LDA Model
