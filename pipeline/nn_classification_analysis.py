@@ -18,6 +18,7 @@ from sklearn.metrics import accuracy_score, f1_score
 
 upstream = []
 nrows = None
+epochs = None
 
 # +
 sys.path.insert(0, "..")
@@ -216,7 +217,8 @@ def evaluate(dataloader):
 
 # +
 # Hyperparameters
-EPOCHS = 15
+# set from pipeline.yaml
+# EPOCHS = 15
 LR = 5  # learning rate
 BATCH_SIZE = 64  # batch size for training
 
@@ -236,7 +238,7 @@ total_batches_per_epoch = len(train_loader)
 # -
 
 # model training loop
-for epoch in range(1, EPOCHS + 1):
+for epoch in range(1, epochs + 1):
     epoch_start_time = time.time()
     train(train_loader)
     accu_val = evaluate(val_loader)
@@ -306,7 +308,8 @@ assert output_tensor.shape[1] == output_dim
 
 # +
 # settings for model training run
-epochs = 25
+# set from pipeline.yaml
+# epochs = 25
 learning_rate = 1e-3
 
 criterion = nn.CrossEntropyLoss()
