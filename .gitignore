@@ -9,3 +9,4 @@ lemmatized_text.csv
 random_disaster_tweets.csv
 lda_topics_disastertype.csv
 __pycache__/
+*.metadata
