@@ -13,7 +13,7 @@ from sklearn.linear_model import LogisticRegression
 # + tags=["parameters"]
 # once we have tweets of interest the upstream will change
 # to the data generation step we are actually interested in
-upstream = ["recommended_actions_upstream", "train_logistic_regression"]
+upstream = ["recommended_actions_upstream", "category_classification_models", "vectorizer"]
 
 # +
 # load a spacy language model
@@ -26,10 +26,10 @@ stopwords = nlp.Defaults.stop_words
 df = pd.read_csv("output/twitter_actions.csv")
 
 # load the vectorizer
-vectorizer = pickle.load(open(os.path.join(".", "output", "fitted_models", "vectorizer.pkl"), "rb"))
+vectorizer = pickle.load(open(os.path.join(".", "output", "vectorizer.pkl"), "rb"))
 
 # load the model
-clf_model = pickle.load(open(os.path.join(".", "output", "fitted_models", "lr_model.pkl"), "rb"))
+clf_model = pickle.load(open(os.path.join(".", "output", "model_lr.pkl"), "rb"))
 
 # prepare text for model - vectorize the tweets 
 raw_tweets_vectorized = vectorizer.transform(df['tweet_text'])
