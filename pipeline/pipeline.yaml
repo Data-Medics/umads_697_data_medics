@@ -61,7 +61,7 @@ tasks:
        lda_model_fire: output/lda_model_fire.pkl
        lda_model_flood: output/lda_model_flood.pkl
        lda_model_hurricane: output/lda_model_hurricane.pkl
-       lda_topics_disaster_type: output/lda_topics_disastertype.csv
+       lda_topics_disaster_type: output/lda_topics_disaster_type.csv
      params:
        random_seed: 42
 

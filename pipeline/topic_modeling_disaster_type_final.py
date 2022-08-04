@@ -1,11 +1,17 @@
 # + tags=["parameters"]
 # declare a list tasks whose products you want to use as inputs
-upstream = None
+upstream = ['vectorizer_countVec']
 
 
 # + tags=["injected-parameters"]
 # This cell was injected automatically based on your stated upstream dependencies (cell above) and pipeline.yaml preferences. It is temporary and will be removed when you save this notebook
 random_seed = 42
+upstream = {
+    "vectorizer_countVec": {
+        "nb": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\vectorizer_countVec.ipynb",
+        "vectorizer": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\vectorizer_countVec.pkl",
+    }
+}
 product = {
     "nb": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\topic_modeling_disaster_type_final.ipynb",
     "lda_model_earthquake": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\lda_model_earthquake.pkl",
@@ -69,6 +75,7 @@ df_all = generate_disaster_type_dataframe(disaster_types = ('earthquake', 'fire'
 # + tags=[]
 
 
+
 # + tags=[]
 df_all['tweet_text_cleaned'] = df_all['tweet_text'].apply(lambda x: tweet_preprocessing(x))
 df_all['lemmatized'] = df_all['tweet_text_cleaned'].apply(lambda x: lemmatize_tweet_text(x, allowed_postags=('NOUN', 'ADJ', 'VERB', 'ADV')))
@@ -86,7 +93,7 @@ params_earthquake = {'n_components' : 3,
           'random_state' : random_seed,
           'batch_size' : 128,
           'evaluate_every' : -1,
-          'n_jobs' : -1,
+          'n_jobs' : 1,
           'learning_decay' : .5}
 
 params_fire = {'n_components' : 3,
@@ -95,7 +102,7 @@ params_fire = {'n_components' : 3,
           'random_state' : random_seed,
           'batch_size' : 128,
           'evaluate_every' : -1,
-          'n_jobs' : -1,
+          'n_jobs' : 1,
           'learning_decay' : .5}
 
 params_flood = {'n_components' : 3,
@@ -104,7 +111,7 @@ params_flood = {'n_components' : 3,
           'random_state' : random_seed,
           'batch_size' : 128,
           'evaluate_every' : -1,
-          'n_jobs' : -1,
+          'n_jobs' : 1,
           'learning_decay' : .5}
 
 params_hurricane = {'n_components' : 3,
@@ -113,7 +120,7 @@ params_hurricane = {'n_components' : 3,
           'random_state' : random_seed,
           'batch_size' : 128,
           'evaluate_every' : -1,
-          'n_jobs' : -1,
+          'n_jobs' : 1,
           'learning_decay' : .5}
 
 lda_model_earthquake = LatentDirichletAllocation(**params_earthquake)
@@ -135,8 +142,14 @@ hurricane_text_vectorized = vectorizer.transform(list(df_all[df_all['disaster_ty
 
 # + tags=[]
 lda_model_earthquake.fit_transform(earthquake_text_vectorized)
+
+# + tags=[]
 lda_model_fire.fit_transform(fire_text_vectorized)
+
+# + tags=[]
 lda_model_flood.fit_transform(flood_text_vectorized)
+
+# + tags=[]
 lda_model_hurricane.fit_transform(hurricane_text_vectorized)
 
 # + tags=[]
@@ -166,54 +179,10 @@ print("Perplexity Flood: ", lda_model_flood.perplexity(flood_text_vectorized))
 print("Perplexity Hurricane: ", lda_model_hurricane.perplexity(hurricane_text_vectorized))
 
 # + [markdown] tags=[]
-# ## Dominant Topics
-
-# + tags=[]
-get_dominant_topics(lda_model_earthquake, earthquake_text_vectorized)
-
-get_dominant_topics(lda_model_fire, fire_text_vectorized)
-
-get_dominant_topics(lda_model_flood, flood_text_vectorized)
-
-get_dominant_topics(lda_model_hurricane, hurricane_text_vectorized)
-
-# + [markdown] tags=[]
-# ## Topic Distribution
-
-# + tags=[]
-
-
-# + tags=[]
-get_topic_distribution(lda_model_earthquake, vectorizer)
-
-# + tags=[]
-get_topic_distribution(lda_model_fire, vectorizer)
-
-# + tags=[]
-get_topic_distribution(lda_model_flood, vectorizer)
-
-# + tags=[]
-get_topic_distribution(lda_model_hurricane, vectorizer)
-
-# + [markdown] tags=[]
-# ## Show top n keywords
-
-# + tags=[]
-show_topics(fitted_lda_model=lda_model_earthquake,fitted_vectorizer=vectorizer, n_words=20)
-
-# + tags=[]
-show_topics(fitted_lda_model=lda_model_fire,fitted_vectorizer=vectorizer, n_words=20)
-
-# + tags=[]
-show_topics(fitted_lda_model=lda_model_flood,fitted_vectorizer=vectorizer, n_words=20)
-
-# + tags=[]
-show_topics(fitted_lda_model=lda_model_hurricane,fitted_vectorizer=vectorizer, n_words=20)
-
-# + [markdown] tags=[]
 # ## Extract Topic Keywords
 
 # + tags=[]
+
 
 
 # + tags=[]
@@ -232,7 +201,7 @@ df_topic_keywords.head()
 
 
 # + tags=[]
-df_topic_keywords.to_csv(product[lda_topics_disaster_type])
+df_topic_keywords.to_csv(product['lda_topics_disaster_type'])
 
 # + tags=[]
 
