@@ -1,5 +1,3 @@
-import pandas as pd
-import tweepy
 import yaml
 
 from tools_zupan import get_hashtags, query_tweets
