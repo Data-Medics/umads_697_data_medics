@@ -34,6 +34,14 @@ tasks:
      params:
        random_seed: 42
 
+   - source: vectorizer_countVec.py
+     name: vectorizer_countVec
+     product:
+       nb: output/vectorizer_countVec.ipynb
+       vectorizer: output/vectorizer_countVec.pkl
+     params:
+       random_seed: 42
+
    - source: category_classification_models.py
      name: category_classification_models
      product:
@@ -42,6 +50,18 @@ tasks:
        model_rf: output/model_rf.pkl
        model_nb: output/model_nb.csv
        model_votingc: output/model_votingc.csv
+     params:
+       random_seed: 42
+
+   - source: topic_modeling_disaster_type_final.py
+     name: topic_modeling_disaster_type_final
+     product:
+       nb: output/topic_modeling_disaster_type_final.ipynb
+       lda_model_earthquake: output/lda_model_earthquake.pkl
+       lda_model_fire: output/lda_model_fire.pkl
+       lda_model_flood: output/lda_model_flood.pkl
+       lda_model_hurricane: output/lda_model_hurricane.pkl
+       lda_topics_disaster_type: output/lda_topics_disaster_type.csv
      params:
        random_seed: 42
 
