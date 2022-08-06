@@ -1,6 +1,15 @@
 import pandas as pd
 import tweepy
 
+
+def make_str(list_of_verbs):
+    list_of_verbs = [a.lower() for a in list_of_verbs]
+    if len(list_of_verbs) == 1:
+        return list_of_verbs[0]
+    else:
+        return ' or '.join(set(list_of_verbs))
+    
+
 def get_hashtags(entity):
     try:
         hashtags = entity['hashtags']
