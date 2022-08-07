@@ -32,7 +32,7 @@ from collections import defaultdict
 from PIL import Image
 import os
 from altair_saver import save
-import tqdm
+from tqdm import tqdm
 
 # + tags=[]
 from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
@@ -62,7 +62,8 @@ df_all['tweet_text_cleaned'] = df_all['tweet_text'].apply(lambda x: tweet_prepro
 df_all['lemmatized'] = df_all['tweet_text_cleaned'].apply(lambda x: lemmatize_tweet_text(x, allowed_postags=('NOUN', 'ADJ', 'VERB', 'ADV')))
 
 # + tags=[]
-df_all = df_all.sample(100)
+#limit records for testing purposes
+# df_all = df_all.sample(100)
 # -
 
 with open("output\\vectorizer_countVec.pkl", "rb") as f:
@@ -114,16 +115,13 @@ for disaster_type in tqdm(disaster_types):
     grid_search_results[disaster_type]['best_perplexity'] = best_lda_model.perplexity(tweets_vectorized)
     
     # Build log liklihood dict
-    i = 1
-    for logscore in model.cv_results_['params']:
-        if logscore['learning_decay']==0.5:
-            log_liklihoods[disaster_type]['0.5'] = (i,model.cv_results_['mean_test_score'][index])
+    
     log_liklihoods[disaster_type]['0.5'] = [(model.cv_results_['params'][index]['n_components'],round(model.cv_results_['mean_test_score'][index])) for index, gscore in enumerate(model.cv_results_['params']) if gscore['learning_decay']==0.5]
     log_liklihoods[disaster_type]['0.7'] = [(model.cv_results_['params'][index]['n_components'],round(model.cv_results_['mean_test_score'][index])) for index, gscore in enumerate(model.cv_results_['params']) if gscore['learning_decay']==0.7]
     log_liklihoods[disaster_type]['0.9'] = [(model.cv_results_['params'][index]['n_components'],round(model.cv_results_['mean_test_score'][index])) for index, gscore in enumerate(model.cv_results_['params']) if gscore['learning_decay']==0.9]
 
 
-model.cv_results_['params'][1]['n_components']
+
 
 log_liklihoods
 
@@ -161,14 +159,17 @@ n_topics_chart = base.properties(
     labelFontSize=20,
     titleFontSize=20
 )
+# -
+
+n_topics_chart
 
 # + [markdown] tags=[]
-# base
+#
 
 # + tags=[]
-src_file_path = os.path.dirname(os.path.abspath("__file__"))
-filename = os.path.join(src_file_path, 'output\optimal_topics.png')
-n_topics_chart.save(filename)
+# src_file_path = os.path.dirname(os.path.abspath("__file__"))
+# filename = os.path.join(src_file_path, 'output\optimal_topics.png')
+# n_topics_chart.save(filename)
 # -
 
 
