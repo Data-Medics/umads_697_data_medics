@@ -183,7 +183,7 @@ def topic_model_coherence_generator(topic_num_start=2,
                                                 random_state=random_seed)
             cur_lda.fit_transform(tweets_vectorized)
             cur_coherence_score = metric_coherence_gensim(
-                measure='umass',
+                measure='u_mass',
                 top_n=150,
                 topic_word_distrib=cur_lda.components_,
                 dtm=cv.transform(norm_corpus),
