@@ -1,6 +1,7 @@
 # + tags=[]
 
 
+
 # + tags=["parameters"]
 # # + tags=["parameters"]
 # declare a list tasks whose products you want to use as inputs
@@ -145,6 +146,7 @@ for topic in range(lda_model_fire.n_components):
 # + tags=[]
 
 
+
 # + tags=[]
 flood_top_sentence = extract_most_representative_sentence(lda_model_flood, flood_text_vectorized, df_all[df_all['disaster_type']=='flood'])
 for topic in range(lda_model_flood.n_components):
@@ -154,6 +156,7 @@ for topic in range(lda_model_flood.n_components):
 # + tags=[]
 
 
+
 # + tags=[]
 hurricane_top_sentence = extract_most_representative_sentence(lda_model_hurricane, hurricane_text_vectorized, df_all[df_all['disaster_type']=='hurricane'])
 for topic in range(lda_model_hurricane.n_components):
@@ -161,6 +164,7 @@ for topic in range(lda_model_hurricane.n_components):
     print(f'Topic_{topic}', hurricane_top_sentence[f'Topic_{topic}'][1]['tweet_text'])
 
 # + tags=[]
+
 
 
 # + tags=[]

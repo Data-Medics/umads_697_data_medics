@@ -208,20 +208,22 @@ def topic_model_coherence_generator(topic_num_start=2,
     
         norm_corpus_tokens = [doc.split() for doc in norm_corpus]
 
-        for i in range(topic_num_start, topic_num_end):
-            print(i)
+        for i in tqdm(range(topic_num_start, topic_num_end)):
             cur_lda = LatentDirichletAllocation(n_components=i,
-                                                max_iter=10,
+                                                max_iter=5,
                                                 random_state=random_seed)
             cur_lda.fit_transform(tweets_vectorized)
             cur_coherence_score = metric_coherence_gensim(
                 measure='c_v',
-                top_n=5,
+                top_n=20,
                 topic_word_distrib=cur_lda.components_,
                 dtm=cv.transform(norm_corpus),
                 vocab=np.array(cv.get_feature_names()),
-                texts=norm_corpus_tokens)
+                return_mean = True,
+                texts=norm_corpus_tokens
+                )
             coherence_results[disaster_type][i] =  (cur_lda,np.mean(cur_coherence_score))
+            print(f' disaster_type = {disaster_type}, n_topics={i}, coherence_score = {cur_coherence_score}')
     return coherence_results
 
 
@@ -239,4 +241,27 @@ coherence_df['coherence_score'] = coherence_df[0].apply(lambda x: x[1])
 coherence_df = coherence_df[['n_topics','disaster_type','coherence_score']]
 coherence_df
 
+# +
+base = alt.Chart(coherence_df).mark_line().encode(
+    x=alt.X('n_topics:O',title = 'Number of Topics',axis=alt.Axis(labelAngle=0)),
+    y=alt.Y('coherence_score:Q',title = 'Mean Coherence Score'),
+    facet=alt.Facet('disaster_type:N', title=None,header=alt.Header(labelFontSize=20))
+)
 
+n_topics_coherence_chart = base.properties(
+    title='Optimal Number of Topics (Mean Coherence Score)',
+    width=600,
+    height = 400).configure_title(
+    fontSize=20,
+    anchor='start',
+    color='black'
+).configure_axis(
+    labelFontSize=20,
+    titleFontSize=20
+).configure_legend(
+    labelFontSize=20,
+    titleFontSize=20
+)
+# -
+
+n_topics_coherence_chart
