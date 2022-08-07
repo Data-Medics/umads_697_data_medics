@@ -76,7 +76,7 @@ df_all.sample(100)
 # ## LDA Model
 
 # + tags=[]
-params_earthquake = {'n_components' : 3,
+params_earthquake = {'n_components' : 2,
           'max_iter' : 10,
           'learning_method' : 'online',
           'random_state' : random_seed,
@@ -85,7 +85,7 @@ params_earthquake = {'n_components' : 3,
           'n_jobs' : 1,
           'learning_decay' : .5}
 
-params_fire = {'n_components' : 3,
+params_fire = {'n_components' : 4,
           'max_iter' : 10,
           'learning_method' : 'online',
           'random_state' : random_seed,
@@ -103,7 +103,7 @@ params_flood = {'n_components' : 3,
           'n_jobs' : 1,
           'learning_decay' : .5}
 
-params_hurricane = {'n_components' : 3,
+params_hurricane = {'n_components' : 5,
           'max_iter' : 10,
           'learning_method' : 'online',
           'random_state' : random_seed,

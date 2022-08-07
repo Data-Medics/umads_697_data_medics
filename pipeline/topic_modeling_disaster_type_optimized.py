@@ -234,3 +234,5 @@ n_topics_coherence_chart = base.properties(
 # -
 
 n_topics_coherence_chart
+
+

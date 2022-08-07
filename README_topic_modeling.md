@@ -62,7 +62,7 @@ scores, perplexity scores and general topic interpretability to guide our refine
 #### Hyperparameter Tuning
 The final step before deploying the LDA model was to estimate the optimal number of topics for each disaster type LDA model. We developed a script
 that performs a grid search exersice, varying the number of topics from 2-6 across each disaster type LDA model. We then computed the
-log-liklihood and coherance scores for each configuration. When calculating coherence, we used the 'u_mass' measurement as opposed to
+log-liklihood and coherence scores for each configuration. When calculating coherence, we used the 'u_mass' measurement as opposed to
 the 'c_v' measurement. The 'c_v' measurement is known to produce the most reliable results, but opted to use the 'u_mass' measurement
 to speed up the computation. The full grid search took approximately XXX hrs to run. See figure XXX below for the results.
 
