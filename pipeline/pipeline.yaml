@@ -41,6 +41,13 @@ tasks:
        vectorizer: output/vectorizer_countVec.pkl
      params:
        random_seed: 42
+       
+   - source: nn_classification_analysis.py
+     name: nn_classification_analysis
+     product:
+       nb: output/nn_classification_analysis.ipynb
+     params:
+       epochs: 10
 
    - source: category_classification_models.py
      name: category_classification_models
