@@ -1,10 +1,14 @@
 # + tags=["parameters"]
+# # + tags=["parameters"]
 # declare a list tasks whose products you want to use as inputs
 upstream = ['vectorizer_countVec']
+random_seed = 42
 # + tags=[]
 
 
+
 # + tags=[]
+
 
 
 # + tags=["injected-parameters"]
@@ -33,40 +37,20 @@ product = {
 from tools_rjg import *
 
 # + tags=[]
-import numpy as np
 import pandas as pd
 import re, nltk, spacy, gensim
-from nltk.stem.porter import PorterStemmer
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from sklearn.decomposition import LatentDirichletAllocation
 nltk.download('punkt')
-from gensim.corpora import Dictionary
-from tqdm import tqdm
-import os
-from gensim.models import LdaModel
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import f1_score
-import scikitplot as skplt
-from sklearn.metrics import (precision_recall_curve,PrecisionRecallDisplay)
-from sklearn.metrics import confusion_matrix
 import pickle
 
 # + tags=[]
 from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.model_selection import GridSearchCV
-from pprint import pprint
 
 # + tags=[]
 import matplotlib.pyplot as plt
 # %matplotlib inline
 
 # + tags=[]
-# # + tags=["parameters"]
-upstream = []
-random_seed = 42
+
 
 # + tags=[]
 
