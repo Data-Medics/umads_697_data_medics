@@ -1,6 +1,10 @@
 # + tags=["parameters"]
 # declare a list tasks whose products you want to use as inputs
 upstream = ['vectorizer_countVec']
+# + tags=[]
+
+
+# + tags=[]
 
 
 # + tags=["injected-parameters"]
@@ -18,7 +22,7 @@ product = {
     "lda_model_fire": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\lda_model_fire.pkl",
     "lda_model_flood": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\lda_model_flood.pkl",
     "lda_model_hurricane": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\lda_model_hurricane.pkl",
-    "lda_topics_disaster_type": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\lda_topics_disastertype.csv",
+    "lda_topics_disaster_type": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\lda_topics_disaster_type.csv",
 }
 
 
@@ -180,10 +184,6 @@ print("Perplexity Hurricane: ", lda_model_hurricane.perplexity(hurricane_text_ve
 
 # + [markdown] tags=[]
 # ## Extract Topic Keywords
-
-# + tags=[]
-
-
 
 # + tags=[]
 topics_earthquake = pd.DataFrame(show_topics(fitted_vectorizer=vectorizer, fitted_lda_model=lda_model_earthquake, n_words=100, dname='earthquake'))

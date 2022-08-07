@@ -16,6 +16,7 @@ torch = "1.11.0"
 torchtext = "0.12.0"
 scikit-plot = "^0.3.7"
 streamlit = "^1.11.0"
+pyLDAvis = "^3.3.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
