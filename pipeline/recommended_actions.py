@@ -6,30 +6,31 @@ import sys
 import spacy
 from spacy.language import Language
 import re
+from sklearn.linear_model import LogisticRegression
 # -
 
-from sklearn.linear_model import LogisticRegression
+# project imports
+from tools_zupan import make_str
 
 # + tags=["parameters"]
 # once we have tweets of interest the upstream will change
 # to the data generation step we are actually interested in
-upstream = ["recommended_actions_upstream", "train_logistic_regression"]
+upstream = ["recommended_actions_upstream", "category_classification_models", "vectorizer"]
+# -
 
-# +
 # load a spacy language model
 nlp = spacy.load("en_core_web_sm")
 stopwords = nlp.Defaults.stop_words
-# -
 
 
 # df = pd.read_csv(params['file'])
 df = pd.read_csv("output/twitter_actions.csv")
 
 # load the vectorizer
-vectorizer = pickle.load(open(os.path.join(".", "output", "fitted_models", "vectorizer.pkl"), "rb"))
+vectorizer = pickle.load(open(os.path.join(".", "output", "vectorizer.pkl"), "rb"))
 
 # load the model
-clf_model = pickle.load(open(os.path.join(".", "output", "fitted_models", "lr_model.pkl"), "rb"))
+clf_model = pickle.load(open(os.path.join(".", "output", "model_lr.pkl"), "rb"))
 
 # prepare text for model - vectorize the tweets 
 raw_tweets_vectorized = vectorizer.transform(df['tweet_text'])
@@ -43,15 +44,6 @@ action_tweets = df[df.predicted_class == "rescue_volunteering_or_donation_effort
 action_tweets = action_tweets.sort_values("tweet_count", ascending=False)
 
 action_tweets["spacy_text"] = action_tweets["tweet_text"].apply(nlp)
-
-
-def make_str(list_of_verbs):
-    list_of_verbs = [a.lower() for a in list_of_verbs]
-    if len(list_of_verbs) == 1:
-        return list_of_verbs[0]
-    else:
-        return ' or '.join(set(list_of_verbs))
-
 
 verb_list = ["donate", "volunteer", "evacuate"]
 regex = re.compile('|'.join(re.escape(x) for x in verb_list), re.IGNORECASE)
@@ -88,3 +80,5 @@ for idx, data in action_tweets.iterrows():
                 else:
                     print(f"Please also consider donating to {url}")
             print("\n\n")
+
+
