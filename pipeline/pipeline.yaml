@@ -48,6 +48,7 @@ tasks:
        nb: output/nn_classification_analysis.ipynb
      params:
        epochs: 10
+       lemmatize_texts: False
 
    - source: category_classification_models.py
      name: category_classification_models
