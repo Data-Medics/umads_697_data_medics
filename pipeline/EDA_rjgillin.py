@@ -76,9 +76,9 @@ print(len(alpha_re_tokens))
 
 # Look at the most common, what do you see?
 # Some stop words removal is needed
-alpha_re_tokens.most_common(50)
+# alpha_re_tokens.most_common(50)
 
-# Not much difference for the simple tokens
+# # Not much difference for the simple tokens
 ws_tokens.most_common(50)
 
 # + endofcell="--"

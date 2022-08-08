@@ -1,6 +1,14 @@
 # + tags=["parameters"]
+# # + tags=["parameters"]
 # declare a list tasks whose products you want to use as inputs
 upstream = ['vectorizer_countVec']
+random_seed = 42
+# + tags=[]
+
+
+
+# + tags=[]
+
 
 
 # + tags=["injected-parameters"]
@@ -18,7 +26,7 @@ product = {
     "lda_model_fire": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\lda_model_fire.pkl",
     "lda_model_flood": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\lda_model_flood.pkl",
     "lda_model_hurricane": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\lda_model_hurricane.pkl",
-    "lda_topics_disaster_type": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\lda_topics_disastertype.csv",
+    "lda_topics_disaster_type": "C:\\Users\\gillrobe\\DataScience\\umads_697_data_medics\\pipeline\\output\\lda_topics_disaster_type.csv",
 }
 
 
@@ -29,40 +37,21 @@ product = {
 from tools_rjg import *
 
 # + tags=[]
-import numpy as np
 import pandas as pd
 import re, nltk, spacy, gensim
-from nltk.stem.porter import PorterStemmer
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from sklearn.decomposition import LatentDirichletAllocation
 nltk.download('punkt')
-from gensim.corpora import Dictionary
-from tqdm import tqdm
-import os
-from gensim.models import LdaModel
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import f1_score
-import scikitplot as skplt
-from sklearn.metrics import (precision_recall_curve,PrecisionRecallDisplay)
-from sklearn.metrics import confusion_matrix
 import pickle
 
 # + tags=[]
 from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.model_selection import GridSearchCV
-from pprint import pprint
 
 # + tags=[]
 import matplotlib.pyplot as plt
 # %matplotlib inline
 
 # + tags=[]
-# # + tags=["parameters"]
-upstream = []
-random_seed = 42
+
+
 
 # + tags=[]
 
@@ -87,7 +76,7 @@ df_all.sample(100)
 # ## LDA Model
 
 # + tags=[]
-params_earthquake = {'n_components' : 3,
+params_earthquake = {'n_components' : 2,
           'max_iter' : 10,
           'learning_method' : 'online',
           'random_state' : random_seed,
@@ -96,7 +85,7 @@ params_earthquake = {'n_components' : 3,
           'n_jobs' : 1,
           'learning_decay' : .5}
 
-params_fire = {'n_components' : 3,
+params_fire = {'n_components' : 4,
           'max_iter' : 10,
           'learning_method' : 'online',
           'random_state' : random_seed,
@@ -114,7 +103,7 @@ params_flood = {'n_components' : 3,
           'n_jobs' : 1,
           'learning_decay' : .5}
 
-params_hurricane = {'n_components' : 3,
+params_hurricane = {'n_components' : 5,
           'max_iter' : 10,
           'learning_method' : 'online',
           'random_state' : random_seed,
@@ -180,10 +169,6 @@ print("Perplexity Hurricane: ", lda_model_hurricane.perplexity(hurricane_text_ve
 
 # + [markdown] tags=[]
 # ## Extract Topic Keywords
-
-# + tags=[]
-
-
 
 # + tags=[]
 topics_earthquake = pd.DataFrame(show_topics(fitted_vectorizer=vectorizer, fitted_lda_model=lda_model_earthquake, n_words=100, dname='earthquake'))

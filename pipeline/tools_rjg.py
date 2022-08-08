@@ -110,3 +110,20 @@ def show_topics(fitted_vectorizer, fitted_lda_model, n_words=100, dname=''):
     df_topic_keywords.columns = ['Word '+str(i) for i in range(df_topic_keywords.shape[1])]
     df_topic_keywords.index = [str(dname)+'_Topic '+str(i) for i in range(df_topic_keywords.shape[0])]
     return df_topic_keywords
+    return df_topic_keywords
+
+
+def extract_most_representative_sentence(fitted_lda_model, vectorized_text, filtered_disaster_df):
+    """extract the most representative sentence for each topic"""
+    lda_output = fitted_lda_model.transform(vectorized_text)
+    topicnames = [i for i in range(fitted_lda_model.n_components)]
+    # index names
+    docnames = [i for i in range(vectorized_text.toarray().shape[0])]
+    # Make the pandas dataframe
+    df_document_topic = pd.DataFrame(np.round(lda_output, 4), columns=topicnames, index=docnames)
+    most_rep_sentence = {}
+    for i in topicnames:
+        id = df_document_topic[i].idxmax()
+        most_rep_sentence['Topic_'+str(i)] = ([id, filtered_disaster_df.iloc[[id]]])
+
+    return most_rep_sentence

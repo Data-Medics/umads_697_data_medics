@@ -30,6 +30,7 @@ df_all = generate_disaster_type_dataframe(disaster_types = ('earthquake', 'fire'
 # + tags=[]
 
 
+
 # + tags=[]
 df_all['tweet_text_cleaned'] = df_all['tweet_text'].apply(lambda x: tweet_preprocessing(x))
 df_all['lemmatized'] = df_all['tweet_text_cleaned'].apply(lambda x: lemmatize_tweet_text(x, allowed_postags=('NOUN', 'ADJ', 'VERB', 'ADV')))
