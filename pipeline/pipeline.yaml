@@ -130,22 +130,22 @@ tasks:
        skip_interval_hours: 2
        credentials_file: '{{credentials_file}}'
        
-  - source: recommended_actions_upstream.py
-    name: recommended_actions_upstream
-    product:
-      nb: output/recommended_actions_upstream.ipynb
-      file: output/twitter_actions.csv
-    params:
-      disaster_types: ["wildfire", "flood", "earthquake"]
-      action_types: ["volunteer", "donate", "evacuate"]
-      language: 'en'
-      limit: 500
-      credentials_file: "credentials.yaml"
+   - source: recommended_actions_upstream.py
+     name: recommended_actions_upstream
+     product:
+       nb: output/recommended_actions_upstream.ipynb
+       file: output/twitter_actions.csv
+     params:
+       disaster_types: ["wildfire", "flood", "earthquake"]
+       action_types: ["volunteer", "donate", "evacuate"]
+       language: 'en'
+       limit: 500
+       credentials_file: "credentials.yaml"
       
-  - source: recommended_actions.py
-    name: recommended_actions
-    product:
-      nb: output/recommended_actions.ipynb
+   - source: recommended_actions.py
+     name: recommended_actions
+     product:
+       nb: output/recommended_actions.ipynb
 
    - source: tweets_timeline.py
      name: tweets_timeline_fire
