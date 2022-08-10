@@ -31,15 +31,19 @@ from nn_models import TweetClassificationLSTM, TweetClassificationEmbedder
 # run model on gpu if possible
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# if true, lemmatize the raw tweets
-# if false, load the saved, processed tweets (assumes the lemmatized tweets already exist)
-lemmatize_texts = False
-# -
-
 # location of saved lemmatized texts
 lemma_sents_file_location = os.path.join(loc.outputs, "train_lemma_sents.csv")
 dev_lemma_sents_file_location = os.path.join(loc.outputs, "dev_lemma_sents.csv")
 test_lemma_sents_file_location = os.path.join(loc.outputs, "test_lemma_sents.csv")
+
+# if true, lemmatize the raw tweets
+# if false, load the saved, processed tweets (assumes the lemmatized tweets already exist)
+train_exists = os.path.exists(lemma_sents_file_location)
+dev_exists = os.path.exists(dev_lemma_sents_file_location)
+test_exists = os.path.exists(test_lemma_sents_file_location)
+
+lemmatize_texts = any(not i for i in [train_exists, dev_exists, test_exists])
+# -
 
 # load a spacy language model
 nlp = spacy.load("en_core_web_sm")
