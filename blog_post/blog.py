@@ -4,7 +4,9 @@ import os
 import pickle
 import pandas as pd
 import sys
+import re
 import datetime
+import spacy
 
 sys.path.insert(0, "./pipeline")
 import locations as loc
@@ -13,11 +15,27 @@ import locations as loc
 def check_locs(locs, search_locs):
     return any([s in locs for s in search_locs])
 
+def make_str(list_of_verbs):
+    list_of_verbs = [a.lower() for a in list_of_verbs]
+    if len(list_of_verbs) == 1:
+        return list_of_verbs[0]
+    else:
+        return ' or '.join(set(list_of_verbs))
+    
+    
+# from https://discuss.streamlit.io/t/how-to-add-extra-lines-space/2220/7
+def v_spacer(height, sb=False) -> None:
+    for _ in range(height):
+        if sb:
+            st.sidebar.write('\n')
+        else:
+            st.write('\n')
+
 
 st.set_page_config(layout="wide")
 st.title('DATA MEDICS')
 st.header('Disaster Tweet Pipeline')
-tabs_list = ["Project Summary", "Topic Modeling", "Tweet Classification", "Tweet Visualizations", "Actionable Insights", "Additional Information"]
+tabs_list = ["Project Summary", "Topic Modeling", "Tweet Classification", "Tweet Visualizations", "Real Time Tweet Analysis", "Additional Information"]
 tab_1, tab_2, tab_3, tab_4, tab_5, tab_6 = st.tabs(tabs_list)
 with tab_1:
     st.header(tabs_list[0])
@@ -59,7 +77,10 @@ A sample of the data can be seen here:
     """
     The following tabs will walk through our work, starting with raw Tweet data all the way to producing actionable recommendations for current natural disasters.
     """
-
+    st.subheader("Common Natural Disasters")
+    st.image(os.path.join(loc.blog_data, "disasters_image.png"), caption="Disasters")
+    
+    
 with tab_2:
     st.header(tabs_list[1])
 
@@ -72,13 +93,14 @@ with tab_4:
 with tab_5:
     st.header(tabs_list[4])
     
-    st.write("""
-    We also felt it would be extremely valuable to aggregate and simplify the actions being recommended on Twitter.  
-    This could range from sites where donations were being collected to locations where resources and food could be picked up by those affected. 
-    To accomplish this we collected Tweets concerning donations and aid around natural disasters - current Tweets relevant to natural disasters via our 
-    disaster specific search term topics and classified as a relevant Tweet via our classification model.
+    st.subheader("Tweet Classication and Filtering")
     
-    Below is a sample of how we aggregated, classified and made the disaster Tweets searchable.
+    st.write("""
+    As discussed in the project introduction, information is extremely hard to come by during a natural disaster.  Depending on the type and scope of the disaster phone lines and other traditional means of communication may be disbled, making information via the internet, and specifically Twitter, extremely valuable.  However, Twitter is a massive ecosystem and it can be very difficult to use the correct search terms when looking for information, and equally difficult to find useful information within the massive amount of results even when proper search terms are used.  
+    
+    Our project would be invaluable to those in the midst of a natural disaster by aggregating Tweets, classifying them, and making them easier to search - in essence we built a natural disaster search engine on top to Twitter.  The information and resources revealed via our search tool could range from sites where donations were being collected to locations where resources and food could be picked up by those affected.  Below is a small demonstration of how our tool works: first, Tweets relevant to natural disasters - collected via our disaster specific search term topics and classified as a relevant Tweet via our classification model - are parsed, cleaned and stored with additional data points like `Geo-Political Entity` extracted and saved.  Next, a second classification model predicts which one of ten classes the Tweet belongs to, adding another layer of searchability.  
+    
+    Finally the Tweets are aggregated and sorted by re-Tweet count resulting in collection of relevant, curated, searchable, natural disaster specific Tweets.
     """)
     
     tweet_data = pd.read_csv(os.path.join(loc.blog_data, "classification_data_sample.csv"))
@@ -114,9 +136,90 @@ with tab_5:
 
     tweet_data_filtered = tweet_data_filtered[["created_at", "tweet_text", "name", "predicted_class", "tweet_count"]].copy()
 
+    st.write(tweet_data_filtered.head())
+    
+    st.subheader("Actionable Insights")
+    
+    """
+    In addition to curating and aggregating useful Tweets our project also extracts useful information from the Tweets - specifically those Tweets that suggest or recommend some concrete action - and makes it available in a easy to consume format.  Again, in the information overload that is Twitter it can be hard to easily find resources to access (for those involved in the disaster), or how/where to make donations and help (for those not directly involved in the disaster).  
+    
+    To accomplish this we developed a three step process.  First, we queried current Twitter for natural disaster related information by 
+    searching for the most relevant topics and words for each disaster type, as determined by our topic models.  Next, we applied our classification model and kept only the Tweets that were labeled as `rescue_volunteering_or_donation_effort`, hypothesizing that these Tweets would be the most important for those searching for resources or with resources to donate.  At this step we also deduplicated re-Tweets and kept a track of the count, using this re-Tweet count as our sorting mechanism (most re-Tweeted to least re-Tweeted.  Finally, we used Spacy to extract the important information from the Tweet in order to concisely display what action the Tweet was recommending and where the user could go (via hyperlink) to accomplish the goal.
+    
+    Below we demonstrate how we have extracted the key information from the Tweet while also preserving the original Tweet.  We believe that by making it easy to access resources or contribute to a recovery effort we can lower the barrier to entry and get more people the help they need while simealtaneously increasing the number of people donation, volunteering or aiding in some other fashion.
+    """
+    
+    v_spacer(height=3)
+    
+    nlp = spacy.load("en_core_web_sm")
+    stopwords = nlp.Defaults.stop_words
+    col1, col2 = st.columns(2)
 
-    st.write(tweet_data_filtered)
+    with col1:
+        start_date_action_tweets = st.date_input(
+            "Select Minimum Tweet Date For Actions",
+            datetime.date(2020, 1, 1),
+            min_value=datetime.datetime.strptime("2020-01-01", "%Y-%m-%d"),
+            max_value=datetime.datetime.now(),
+        )
 
+    with col2:
+        verb_list = ["donate", "volunteer", "evacuate", "all"]
+
+        verb_types = st.multiselect("Choose a tweet topic", verb_list, verb_list[:])
+
+
+    # load data
+    action_tweets = pd.read_csv(os.path.join(loc.blog_data, "action_tweets_data_sample.csv"))
+    
+    # create filter
+    date_filter_action_tweets = pd.to_datetime(action_tweets.created_at).apply(lambda x: x.date()) >= start_date_action_tweets
+    
+    # apply filter
+    action_tweets_filtered = action_tweets[date_filter_action_tweets]
+    
+    # add spacy nlp
+    action_tweets_filtered["spacy_text"] = action_tweets_filtered["spacy_text"].apply(nlp)
+    
+    regex = re.compile('|'.join(re.escape(x) for x in verb_list), re.IGNORECASE)
+
+    for idx, data in action_tweets_filtered.head(10).iterrows():
+        # find the recommended action
+        verb_matches = re.findall(regex, data["tweet_text"])
+        if len(set(verb_matches).intersection(set(verb_types))) < 1:
+            continue
+        total_tweet_count = data.tweet_count - 1
+
+        # at least on word has been found
+        if len(verb_matches) > 0:
+
+            verb_matches.append("all")
+            # find all the links (often more than 1 donation site)
+            donation_url_list = []
+
+            # check for a retweet
+            original_tweeter = re.findall("RT @([a-zA-z0-9_]*)", data["tweet_text"])
+
+            # find and record all the urls in the tweet
+            for token in data["spacy_text"]:
+                if token.like_url:
+                    donation_url_list.append(token)
+
+
+            if len(donation_url_list) > 0:
+                if len(original_tweeter) > 0:
+                    tweet_author = original_tweeter[0]
+                else:
+                    tweet_author = data["name"]
+                for idx, url in enumerate(donation_url_list):
+                    if idx == 0:
+                        st.write(f"{tweet_author} and {total_tweet_count} others recommend you {make_str(verb_matches)}.  More information at {url}")
+                    else:
+                        st.write(f"Please also consider donating to {url}")
+                with st.expander("Original Tweet"):
+                    st.write(data['tweet_text'])
+                st.write("\n\n")
+                st.write("-"*50)
 
 with tab_6:
     st.header(tabs_list[5])
