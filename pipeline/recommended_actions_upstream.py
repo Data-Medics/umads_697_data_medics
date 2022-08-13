@@ -11,12 +11,12 @@ language=None
 limit=None
 credentials_file=None
 
-# query = '(wildfire OR flood OR earthquake donate evacuate volunteer)'
-# disaster_types = ["wildfire", "flood", "earthquake"]
-# action_types = ["volunteer", "donate", "evacuate"]
-# language = 'en'
-# limit = 1000
-# credentials_file = "credentials.yaml"
+query = '(wildfire OR flood OR earthquake donate evacuate volunteer)'
+disaster_types = ["wildfire", "flood", "earthquake"]
+action_types = ["volunteer", "donate", "evacuate"]
+language = 'en'
+limit = 5000
+credentials_file = "credentials.yaml"
 
 # +
 queries = []
@@ -42,7 +42,10 @@ df["tweet_count"] = df.groupby("tweet_hash").transform("count")["tweet_text"]
 
 df_slim = df.groupby("tweet_hash").first()
 
-df_slim.to_csv(product['file'], index=False)
-# df_slim.to_csv("output/twitter_actions.csv", index=False)
+# df_slim.to_csv(product['file'], index=False)
+df_slim.to_csv("output/twitter_actions.csv", index=False)
+
+
+# -
 
 
