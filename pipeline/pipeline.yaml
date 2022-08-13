@@ -72,11 +72,11 @@ tasks:
      params:
        random_seed: 42
 
-   - source: topic_modeling_disaster_type_results.py
-     name: topic_modeling_disaster_type_results
-     product:
-       nb: output/topic_modeling_disaster_type_results.ipynb
-     params:
+#   - source: topic_modeling_disaster_type_results.py
+#     name: topic_modeling_disaster_type_results
+#     product:
+#       nb: output/topic_modeling_disaster_type_results.ipynb
+#     params:
 
    - source: recent_tweets.py
      name: recent_tweets_wildfire

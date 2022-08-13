@@ -313,10 +313,10 @@ df_tweets.sample(10)
 
 
 src_file_path = os.path.dirname(os.path.abspath("__file__"))
-filename_random_tweets = os.path.join(src_file_path, 'output\\random_disaster_tweets.csv')
+filename_random_tweets = os.path.join(src_file_path, 'output/random_disaster_tweets.csv')
 df_tweets.to_csv(filename_random_tweets)
 
-df_random = pd.read_csv('output\\random_disaster_tweets.csv')
+df_random = pd.read_csv('output/random_disaster_tweets.csv')
 df_random.head()
 
 

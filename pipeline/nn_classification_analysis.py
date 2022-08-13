@@ -1,3 +1,9 @@
+# + tags=["parameters"]
+# declare a list tasks whose products you want to use as inputs
+upstream = None
+
+# -
+
 # ## Classification Comparison Using Neural Networks
 
 import os
@@ -18,7 +24,7 @@ from sklearn.metrics import accuracy_score, f1_score
 
 upstream = []
 nrows = None
-epochs = None
+epochs = 10
 
 # +
 sys.path.insert(0, "..")

@@ -120,7 +120,7 @@ lda_model_hurricane = LatentDirichletAllocation(**params_hurricane)
 
 
 # + tags=[]
-with open("output\\vectorizer_countVec.pkl", "rb") as f:
+with open("output/vectorizer_countVec.pkl", "rb") as f:
     vectorizer = pickle.load(f)
 
 # + tags=[]
