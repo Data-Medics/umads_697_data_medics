@@ -16,7 +16,7 @@ def check_locs(locs, search_locs):
     return any([s in locs for s in search_locs])
 
 def make_str(list_of_verbs):
-    list_of_verbs = [a.lower() for a in list_of_verbs]
+    list_of_verbs = [a.lower() for a in list_of_verbs if a != "all"]
     if len(list_of_verbs) == 1:
         return list_of_verbs[0]
     else:
