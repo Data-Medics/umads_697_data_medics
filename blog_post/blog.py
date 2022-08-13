@@ -164,7 +164,7 @@ with tab_5:
         )
 
     with col2:
-        verb_list = ["donate", "volunteer", "evacuate", "all"]
+        verb_list = ["donate", "volunteer", "all"]
 
         verb_types = st.multiselect("Choose a tweet topic", verb_list, verb_list[:])
 

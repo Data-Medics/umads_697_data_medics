@@ -18,7 +18,7 @@ def get_hashtags(entity):
     return [tag.get('tag') for tag in hashtags]
 
 
-def query_tweets(bearer_token, query, max_results=100, limit=100):
+def query_tweets(bearer_token, query, max_results=100, limit=100, end_time=None):
     client = tweepy.Client(
         bearer_token=bearer_token,
         wait_on_rate_limit=True
@@ -33,7 +33,8 @@ def query_tweets(bearer_token, query, max_results=100, limit=100):
                                     tweet_fields=tweet_fields,
                                     expansions=['author_id'],
                                     user_fields=['username'],
-                                    max_results=max_results):
+                                    max_results=max_results,
+                                    end_time=end_time):
         while counter < limit:
             users = batched_tweets.includes['users']
             users_df = pd.DataFrame(users, columns=['id','name','username'])
