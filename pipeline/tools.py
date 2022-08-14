@@ -8,6 +8,8 @@ import spacy
 import altair as alt
 import networkx as nx
 import nx_altair as nxa
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def get_locations(nlp, df, limit_most_common=100):
@@ -145,6 +147,46 @@ def extract_assign_location(df_disaster_tweets, number_most_common=10):
     df_locs_most_common = pd.DataFrame(locations_count, columns=['location', 'count'])
 
     return df_disaster_tweets, df_locs_most_common
+
+
+def extract_assign_location_per_kind(df_disaster_tweets, disaster_kinds, number_most_common=10):
+    nlp = spacy.load('xx_ent_wiki_sm')
+
+    # Go through the dev data and collect all the locations
+    locations = []
+
+    for _, row in tqdm(df_disaster_tweets.iterrows()):
+        doc = nlp(row['tweet_text'])
+        locations.append([ent.text for ent in doc.ents if ent.label_ in ['LOC']])
+
+    df_disaster_tweets['location'] = locations
+
+    df_locs_most_common = None
+
+    for kind in disaster_kinds:
+        _df_disaster_tweets = df_disaster_tweets[df_disaster_tweets['disaster_kind'] == kind]
+        locations_flatten = sum(df_disaster_tweets['location'].tolist(), [])
+        locations_count = Counter(locations_flatten).most_common(number_most_common)
+        _df = pd.DataFrame(locations_count, columns=['location', 'count'])
+        _df['disaster_kind'] = kind
+
+        if df_locs_most_common is None:
+            df_locs_most_common = _df
+        else:
+            df_locs_most_common = df_locs_most_common.append(_df, ignore_index=True)
+
+    return df_disaster_tweets, df_locs_most_common
+
+
+def plot_class_boxplot(df, class_label=None, title=None):
+    plt.figure(figsize=(10, 6))
+    if class_label:
+        df = df[df['class_label'] == class_label]
+    ax = sns.boxplot(x="disaster_kind", y="count", data=df).set(title=title)
+
+    _title = title if title else class_label if class_label else ''
+
+    ax = sns.boxplot(x="disaster_kind", y="count", data=df).set(title=_title)
 
 
 def disaster_title(disaster_kind, plural=False):

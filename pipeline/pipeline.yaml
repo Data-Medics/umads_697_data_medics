@@ -147,6 +147,18 @@ tasks:
      product:
        nb: output/recommended_actions.ipynb
 
+   - source: tweets_timeline_compare.py
+     name: tweets_timeline_compare
+     product:
+       nb: output/tweets_timeline_compare.ipynb
+     params:
+       random_seed: 42
+       disaster_kinds:
+         - recent_tweets_wildfire
+         - recent_tweets_hurricane
+         - recent_tweets_flood
+         - recent_tweets_earthquake
+
    - source: tweets_timeline.py
      name: tweets_timeline_fire
      product:
