@@ -39,17 +39,17 @@ df_all = generate_disaster_type_dataframe(disaster_types = ('earthquake', 'fire'
                                           , dev_train_test= ('dev', 'train', 'test'))
 
 # + tags=[]
-with open("output\\vectorizer_countVec.pkl", "rb") as f:
+with open("output/vectorizer_countVec.pkl", "rb") as f:
     vectorizer = pickle.load(f)
 
 # + tags=[]
-with open("output\\lda_model_earthquake.pkl", "rb") as f:
+with open("output/lda_model_earthquake.pkl", "rb") as f:
     lda_model_earthquake = pickle.load(f)
-with open("output\\lda_model_fire.pkl", "rb") as f:
+with open("output/lda_model_fire.pkl", "rb") as f:
     lda_model_fire = pickle.load(f)
-with open("output\\lda_model_flood.pkl", "rb") as f:
+with open("output/lda_model_flood.pkl", "rb") as f:
     lda_model_flood = pickle.load(f)
-with open("output\\lda_model_hurricane.pkl", "rb") as f:
+with open("output/lda_model_hurricane.pkl", "rb") as f:
     lda_model_hurricane = pickle.load(f)
 
 

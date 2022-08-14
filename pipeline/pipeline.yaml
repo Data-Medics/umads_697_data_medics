@@ -72,11 +72,11 @@ tasks:
      params:
        random_seed: 42
 
-   - source: topic_modeling_disaster_type_results.py
-     name: topic_modeling_disaster_type_results
-     product:
-       nb: output/topic_modeling_disaster_type_results.ipynb
-     params:
+#   - source: topic_modeling_disaster_type_results.py
+#     name: topic_modeling_disaster_type_results
+#     product:
+#       nb: output/topic_modeling_disaster_type_results.ipynb
+#     params:
 
    - source: recent_tweets.py
      name: recent_tweets_wildfire
@@ -130,27 +130,63 @@ tasks:
        skip_interval_hours: 2
        credentials_file: '{{credentials_file}}'
        
-  - source: recommended_actions_upstream.py
-    name: recommended_actions_upstream
-    product:
-      nb: output/recommended_actions_upstream.ipynb
-      file: output/twitter_actions.csv
-    params:
-      disaster_types: ["wildfire", "flood", "earthquake"]
-      action_types: ["volunteer", "donate", "evacuate"]
-      language: 'en'
-      limit: 500
-      credentials_file: "credentials.yaml"
+   - source: recommended_actions_upstream.py
+     name: recommended_actions_upstream
+     product:
+       nb: output/recommended_actions_upstream.ipynb
+       file: output/twitter_actions.csv
+     params:
+       disaster_types: ["wildfire", "flood", "earthquake"]
+       action_types: ["volunteer", "donate", "evacuate"]
+       language: 'en'
+       limit: 500
+       credentials_file: "credentials.yaml"
       
-  - source: recommended_actions.py
-    name: recommended_actions
-    product:
-      nb: output/recommended_actions.ipynb
+   - source: recommended_actions.py
+     name: recommended_actions
+     product:
+       nb: output/recommended_actions.ipynb
 
-#   - source: tweets_timeline.py
-#     name: tweets_timeline_fire
-#     product:
-#       nb: output/tweets_timeline_fire.ipynb
-#     params:
-#       random_seed: 42
+   - source: tweets_timeline_compare.py
+     name: tweets_timeline_compare
+     product:
+       nb: output/tweets_timeline_compare.ipynb
+     params:
+       random_seed: 42
+       disaster_kinds:
+         - recent_tweets_wildfire
+         - recent_tweets_hurricane
+         - recent_tweets_flood
+         - recent_tweets_earthquake
 
+   - source: tweets_timeline.py
+     name: tweets_timeline_fire
+     product:
+       nb: output/tweets_timeline_fire.ipynb
+     params:
+       random_seed: 42
+       disaster_kind: recent_tweets_wildfire
+
+   - source: tweets_timeline.py
+     name: tweets_timeline_earthquake
+     product:
+       nb: output/tweets_timeline_earthquake.ipynb
+     params:
+       random_seed: 42
+       disaster_kind: recent_tweets_earthquake
+
+   - source: tweets_timeline.py
+     name: tweets_timeline_flood
+     product:
+       nb: output/tweets_timeline_flood.ipynb
+     params:
+       random_seed: 42
+       disaster_kind: recent_tweets_flood
+
+   - source: tweets_timeline.py
+     name: tweets_timeline_hurricane
+     product:
+       nb: output/tweets_timeline_hurricane.ipynb
+     params:
+       random_seed: 42
+       disaster_kind: recent_tweets_hurricane

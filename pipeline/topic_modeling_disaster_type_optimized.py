@@ -47,7 +47,7 @@ df_all['lemmatized'] = df_all['tweet_text_cleaned'].apply(lambda x: lemmatize_tw
 # df_all = df_all.sample(500)
 # -
 
-with open("output\\vectorizer_countVec.pkl", "rb") as f:
+with open("output/vectorizer_countVec.pkl", "rb") as f:
     vectorizer = pickle.load(f)
 
 # +
