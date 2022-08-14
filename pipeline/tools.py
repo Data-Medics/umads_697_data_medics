@@ -10,6 +10,7 @@ import networkx as nx
 import nx_altair as nxa
 import matplotlib.pyplot as plt
 import seaborn as sns
+import scipy.stats as stats
 
 
 def get_locations(nlp, df, limit_most_common=100):
@@ -200,6 +201,53 @@ def disaster_title(disaster_kind, plural=False):
         return 'Hurricanes' if plural else 'Hurricane'
     else:
         return 'Undefined'
+
+
+def f_test(df, class_labels=None, disaster_kind_names=['Wildfire', 'Hurricane', 'Flood', 'Earthquake']):
+    if class_labels:
+        df = df[df['class_label'].isin(class_labels)]
+
+    disasters = []
+
+    for kind in disaster_kind_names:
+        _df = df[df['disaster_kind'] == kind]
+        if _df.shape[0] > 0:
+            disasters.append(_df['count'])
+
+    if len(disasters) > 1:
+        return stats.f_oneway(*disasters)
+
+
+def ks_test(df, class_labels=None, disaster_kind_names=['Wildfire', 'Hurricane', 'Flood', 'Earthquake']):
+    if class_labels:
+        df = df[df['class_label'].isin(class_labels)]
+
+    disasters = {}
+
+    # Collect the samples for each disaster kind
+    for kind in disaster_kind_names:
+        _df = df[df['disaster_kind'] == kind]
+        if _df.shape[0] > 0:
+            disasters[kind] = _df['count']
+
+    # Find out if one of them dominates as compared to the others, use one-sided KS test for that
+    dominant = None
+
+    for kind_prim in disasters.keys():
+        is_dominant = True
+        pvalues = []
+
+        for kind_sec in disasters.keys():
+            if kind_prim != kind_sec:
+                _, pvalue = stats.kstest(disasters[kind_prim], disasters[kind_sec], alternative='less')
+                if pvalue > 0.1:
+                    is_dominant = False
+                else:
+                    pvalues.append(pvalue)
+        if is_dominant:
+            return kind_prim, pvalues
+
+    return None, None
 
 
 def topNlocations(df, n=3):
