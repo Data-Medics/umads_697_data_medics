@@ -5,11 +5,11 @@ The objective of training tweet classification models for the purpose of this pr
 on a recent tweets, do an automated analysis and be able to answer questions like that:
 - Is there an active disaster going on?
 - What kind of disaster is going on - like wildfire, earthquake, flood, hurricane?
-- What are the affected locations, are different locations affected together?
+- What are the affected locations, are some locations connected together?
 - For the active disasters, what categories are the tweets fit in - distress tweets, ask for donations etc.?
 - What are the recommended actions in regard to the disaster?
 - What is the disaster intensity over time, what are the peak days?
-- Can we preview the tweets for a particular time and learn better what is going on?
+- Can we preview the tweets for a particular time and understand better what is going on?
 
 The following elaboration explains how we can answer most of these questions.
 
