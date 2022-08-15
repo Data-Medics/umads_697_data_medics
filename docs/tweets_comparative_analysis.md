@@ -174,3 +174,5 @@ tweet data look pretty uniform and inconclusive.
 
 In the next section we will show how we extract the locations of the affected places, and how
 we leverage this info to point out more details and insights for a particular disaster. 
+
+## Final observations and conclusions
