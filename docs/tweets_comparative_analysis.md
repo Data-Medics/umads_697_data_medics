@@ -166,7 +166,7 @@ can point out at what time a particular category was truly active:
 ![Grouped Tweets](images/past_class_timeline.png)
 
 ## Final observations and conclusions
-We demonstrated how resent tweets about a particular disaster category can be obtained and 
+We demonstrated how the recent tweets about a particular disaster category can be obtained and 
 analysed both visually and by leveraging statistical tests in order to identify dominant
 active, past and possibly future disasters. We could not accomplish this without the ML
 models we trained on the labeled dataset, because without using the classification, that new
