@@ -24,7 +24,7 @@ finding out locations in text.
 
 Once the extraction process completed, a new column is added to the recent tweet data that contains
 a list of all locations extracted from the tweet. Therefore, there may be two or more locations in
-the same text.
+the same text:
 
 ![Grouped Tweets](images/tweets_locations_table.png)
 
@@ -36,6 +36,17 @@ fire locations are:
 
 The first thing is to do with the updated data is to create an interactive chart that to show us
 what are the affected locations over time. As expected, California is pretty active, with wildfire
-tweets mentioning heavily also Utah (with brown line).
+tweets mentioning heavily also Utah (with brown line):
 
 ![Grouped Tweets](images/fire_locations.png)
+
+Running the classification models assigns a class label on each tweet in the dataset. The respective
+interactive visualization now shows what class and locations are affected at a particular time,
+and allows us to explore the peaks:
+
+![Grouped Tweets](images/class_locations_peaks.png)
+
+A subsequent interactive visualization allows us to quickly sample the tweets for a selected period
+and get even better idea and details on what is going on with the particular disaster at that time:
+
+![Grouped Tweets](images/fire_tweet_sample.png)
