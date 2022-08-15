@@ -50,8 +50,9 @@ The completed dataset is ready for further analysis
 
 ## Determining the dominating disaster in a category
 The first question we are trying to answer on the newly obtained dataset is find out if there is an
-active disaster, and what kind it is. For that purpose, we group all the tweets per disaster type, and find
-the count of the tweets for 8-hour intervals. A sample of the result dataframe looks like that:
+active disaster, and what kind it is. For that purpose, we group all the tweets per disaster type and 
+class label, and find the count of the tweets for 8-hour intervals. A sample of the result 
+dataframe looks like that:
 
 ![Grouped Tweets](images/grouped_tweets.png)
 
@@ -60,6 +61,36 @@ that there is no visible difference in the mean and variance of the samples:
 
 ![Grouped Tweets](images/class_distribution.png)
 
-[### Using visualization techniques
+We can statistically prove the same by running an f-test on the disaster distributions. The 
+result is:
+```buildoutcfg
+F_onewayResult(statistic=0.3869087889615666, pvalue=0.7624738994702899)
+```
+The f-statistic is low and below 10, the p-value is high for the 10% significance, therefore,
+we cannot reject the null hypothesis that the means of the individual disaster samples are the same.
 
-### Using statistical tests]()
+How about if we filter the tweets for the 'displaced_people_and_evacuations' class label. In
+that case the boxplot chart looks like that:
+
+![Grouped Tweets](images/displaced_class_distribution.png)
+
+For this particular class the mean and the variance of the wildfires are visibly higher as
+compared to the others, which makes sence since there were many active fires in California
+at that time. We can run an f-test and observe the result:
+```buildoutcfg
+F_onewayResult(statistic=6.998888294867653, pvalue=0.00043411742534776675)
+```
+The p-value is low, which indicates that there are differences in the mean and variance,
+however, the f-statistic is not that high - ideally it should be above 10 for us to 
+confidently reject the null hypothesis.
+
+We can run also a one-sided KS test for each disaster type vs all the others and determine
+if one clearly dominates. The function that we have written to compute that returns the
+following:
+```buildoutcfg
+(None, None)
+```
+Which points to the fact it is unable to find a disaster where the number tweets in this
+category clearly exceed the other. 
+
+## Final observations and conclusions
