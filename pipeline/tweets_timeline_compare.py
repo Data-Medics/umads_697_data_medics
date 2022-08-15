@@ -222,7 +222,9 @@ sns.lineplot(x='created_at', y='count', hue="disaster_kind", style="disaster_kin
 
 plt.figure(figsize = (10,6))
 sns.lineplot(x='created_at', y='count', hue="disaster_kind", style="disaster_kind", ci=None,
-             data=df_group_plot[df_group_plot['class_label'].isin(class_labels_past)]);
+             data=df_group_plot[df_group_plot['class_label'].isin(class_labels_past)]).set(
+    title='Tweets for classes: ' + str(class_labels_past)
+);
 
 # ### A simple computation allows us to also compare the means and standard deviations for the disaster kinds - by inspecting these, we can see which one is higher, even we don't have a statistical proof  
 

@@ -13,7 +13,8 @@ on a recent tweets, do an automated analysis and be able to answer questions lik
 
 The following elaboration explains how we can answer most of these questions.
 
-For the purpose of this effort we have obtained and analyzed tweets for the week between ...
+For the purpose of this effort we have obtained and analyzed tweets for the week between July 31st, 2022
+and August 7th, 2022.
 
 ## Obtaining sample tweets by querying the Twitter APIs
 The first step in analyzing the most resent disaster tweets is obtaining them from Twitter. The solution we
@@ -88,9 +89,88 @@ We can run also a one-sided KS test for each disaster type vs all the others and
 if one clearly dominates. The function that we have written to compute that returns the
 following:
 ```buildoutcfg
-(None, None)
+dominatingDisaster=None, pvalues=None
 ```
 Which points to the fact it is unable to find a disaster where the number tweets in one
 category clearly exceed the others. 
 
+If we do a comparative visualization using again boxplot and filter by 'rescue_volunteering_or_donation_effort',
+we get the following chart:
+
+![Grouped Tweets](images/domation_class_distribution.png)
+
+Which clearly shows the tweets related to flood are clearly a majority (this week was after devastating
+floods in Kentucky). We can prove this statistically running again an f-test:
+```buildoutcfg
+F_onewayResult(statistic=63.466941273877204, pvalue=1.1924304959724865e-20)
+```
+The p-value is very low, the f-statistic is well above 10, which means the mean and variances of the
+observed groups are clearly different.
+
+Utilizing the paired KS-test function we have written, we can point exactly which disaster kind is the
+majority - it is "Flood" and the one-sided test p-values are proof of that:
+```buildoutcfg
+dominatingDisaster=Flood, pvalues=[3.396884814555207e-08, 5.429149940086322e-08, 3.046866711808434e-09]
+```
+
+How can we determine if there is an active disaster going on for this particular time? Our solution
+was to look for class labels that were indicating more distress tweets, in particular, we defined 
+an "active group" of tweets with the labels 'displaced_people_and_evacuations' and 'injured_or_dead_people':
+```buildoutcfg
+class_labels_active = [
+    'displaced_people_and_evacuations',
+    'injured_or_dead_people',
+]
+```
+When using both distress classes, the visualization chart is:
+
+![Grouped Tweets](images/active_class_distribution.png)
+
+The respective f-test statistic is:
+```buildoutcfg
+F_onewayResult(statistic=10.35071997380027, pvalue=3.960570565233521e-06)
+```
+And the KS-test clearly identifies the "Wildfire' as a dominant active disaster just as expected:
+```buildoutcfg
+dominatingDisaster=Wildfire, pvalues=[0.07322472520068853, 5.2459936908087666e-05, 2.3038948480462642e-07]
+```
+Similarly, we can identify classes that are mostly post-active disasters - like the floods are gone,
+however, the community still deals with the consequences. In this category we included the following
+classes:
+```buildoutcfg
+class_labels_past = [
+    'rescue_volunteering_or_donation_effort',
+    'requests_or_urgent_needs',
+    'sympathy_and_support',
+]
+```
+The visualization again shows the "Flood" as dominant, and the statistical tests emphasize that:
+
+![Grouped Tweets](images/past_class_distribution.png)
+
+The f-test result as follows - low p-value and high f-statistic, the means and variances are clearly
+different:
+```buildoutcfg
+F_onewayResult(statistic=11.950317300994135, pvalue=3.715889348149974e-07)
+```
+And the KS-test points out to the "Flood":
+```buildoutcfg
+dominatingDisaster=Flood, pvalues=[0.007012714471607445, 0.014540857905105333, 0.006384398236281075]
+```
+The class "caution_and_advice" can be used as an indication for upcoming/expected disasters,
+in our exploration, the "Hurricane" came on top in this category.
+
+We created some additional visualizations that show the tweet intensity over time, and potentially
+can point out at what time a particular category was truly active:
+
+![Grouped Tweets](images/past_class_timeline.png)
+
 ## Final observations and conclusions
+We demonstrated how resent tweets about a particular disaster category can be obtained and 
+analysed both visually and by leveraging statistical tests in order to identify dominant
+active, past and possibly future disasters. We could not accomplish this without the ML
+models we trained on the labeled dataset, because without using the classification, that new
+tweet data look pretty uniform and inconclusive. 
+
+In the next section we will show how we extract the locations of the affected places, and how
+we leverage this info to point out more details and insights for a particular disaster. 
