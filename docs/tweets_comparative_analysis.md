@@ -55,6 +55,11 @@ the count of the tweets for 8-hour intervals. A sample of the result dataframe l
 
 ![Grouped Tweets](images/grouped_tweets.png)
 
+When we create a boxplot for the tweets count distribution just by disaster type, we can conclude
+that there is no visible difference in the mean and variance of the samples:
+
+![Grouped Tweets](images/class_distribution.png)
+
 [### Using visualization techniques
 
 ### Using statistical tests]()
