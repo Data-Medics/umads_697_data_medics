@@ -90,7 +90,7 @@ following:
 ```buildoutcfg
 (None, None)
 ```
-Which points to the fact it is unable to find a disaster where the number tweets in this
-category clearly exceed the other. 
+Which points to the fact it is unable to find a disaster where the number tweets in one
+category clearly exceed the others. 
 
 ## Final observations and conclusions
