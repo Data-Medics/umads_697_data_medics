@@ -53,7 +53,7 @@ The first question we are trying to answer on the newly obtained dataset is find
 active disaster, and what kind it is. For that purpose, we group all the tweets per disaster type, and find
 the count of the tweets for 8-hour intervals. A sample of the result dataframe looks like that:
 
-![Grouped Tweets](imaged/grouped_tweets.png)
+![Grouped Tweets](images/grouped_tweets.png)
 
 [### Using visualization techniques
 
