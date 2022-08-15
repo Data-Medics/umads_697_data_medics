@@ -28,3 +28,14 @@ the same text.
 
 ![Grouped Tweets](images/tweets_locations_table.png)
 
+The top locations by tweet count are then identified and ready to be used. For the "wildfire" 
+disaster type for example, for the period between July 31st, 2022 and August 7th, 2022, the top
+fire locations are:
+
+![Grouped Tweets](images/top_locations.png)
+
+The first thing is to do with the updated data is to create an interactive chart that to show us
+what are the affected locations over time. As expected, California is pretty active, with wildfire
+tweets mentioning heavily also Utah (with brown line).
+
+![Grouped Tweets](images/fire_locations.png)
