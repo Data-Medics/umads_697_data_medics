@@ -7,6 +7,7 @@ import sys
 import re
 import datetime
 import spacy
+from streamlit import components
 
 sys.path.insert(0, "./pipeline")
 import locations as loc
@@ -66,7 +67,7 @@ A sample of the data can be seen here:
     
     st.subheader("Real Time Data")
     """
-    However, giving people critical information about a disaster that happened several years ago is of limited value.  For our project to truly help, we needed to apply our models and analysis to live Twitter data around current natural disasters.  To do this we utilized [Tweepy](https://www.tweepy.org/) and wrote several functions that pulled real time Twitter based on our disaste specific search terms which we then used as inputs to our model.
+    However, giving people critical information about a disaster that happened several years ago is of limited value.  For our project to truly help, we needed to apply our models and analysis to live Twitter data around current natural disasters.  To do this we utilized [Tweepy](https://www.tweepy.org/) and wrote several functions that pulled real time Twitter based on our disaster specific search terms which we then used as inputs to our model.
     """
     st.subheader("Project Plan")
     """
@@ -83,6 +84,124 @@ A sample of the data can be seen here:
     
 with tab_2:
     st.header(tabs_list[1])
+    st.subheader("Overview")
+    """
+        In order to provide actionable recommendations during times of disaster, we needed a way to efficiently query recent and relevant disaster tweets from twitter.
+        To do so we developed a function to extract tweets from the Twitter API based on a query of keywords. The keywords we used to build this query were a direct
+    product of the Latent Dirichlet Allocation (LDA) topic modeling analysis we conducted on the HumAid disaster tweets dataset.
+    """
+    st.subheader("Topic Modeling Exploratory Analysis")
+    st.markdown("**Token Exploration**")
+    """
+        To gain some initial familiarity with the disaster tweet text, we performed some simple token exploration.
+    More specifically we looked at how many tokens were composed of word characters versus tokens comprised of non-word characters.
+    Tweet text can be very messy, and we would eventually need to decide how to handle hashtags, symbols, retweets and mentions.
+    """
+    st.subheader("Model Design")
+    st.markdown("**Text Pre-Processing**")
+    """
+        After a few initial iterations, it became clear that the success and performance of our topic model
+    would largely depend on how well we were able to pre-process the disaster tweet text. This naturally became an iterative process
+    as we adjusted the following parameters and inputs, measuring topic quality at each iteration:
+    1. Stopword removal
+    2. Tokenization technique (single tokens, bigrams, trigams)
+    3. Splitting of compound words
+    4. Inclusion and exclusion of hashtags, twitter handles (@user), web addresses, non-ascii characters
+    5. Word length
+    """
+    st.markdown("**Lemmatization & Vectorization**")
+    """
+        Lemmatization is the process of reducing various inflectional forms of a word to it's base form. We chose lemmatization
+    over stemming because we wanted to retain the morphological structure of words, believing this would be
+    a more robust way to capture topics. Stemming is a more crude approach in which the end or the beginning of a word is cut
+    off to reduce the word to it's root. 
+    
+    We used the spaCy [Lemmatizer](https://spacy.io/api/lemmatizer) pipeline component to transform our pre-processed tweet text into it's lemmatized form.
+    One challenge we encountered when initially building out our topic model, was that our topics were being focused around
+    specific events and locations. This was undesirable as we wanted our topics to be generalizable to future disasters. spaCy's 
+    lemmatzier gave us the flexibility to filter out unwanted part-of-speech tags. We chose to only include
+    nouns, adjectives, verbs and adverbs in our final lemmatized text. In some cases there were still location names that slipped
+    through our pre-processing steps. For these unique cases, we added these words to our list of stopwords.
+    
+    
+    For our text vectorization, we needed to convert our lemmatized text into a bag-of-words representation which the LDA model
+    could use. We used the sklearn [CountVectorizer](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html) 
+    class to produce a sparse representation of token counts. The CountVectorizer class conveniently let us set our ngram_range to (1,2) along 
+    with filtering out our pre-defined stopwords.
+    """
+    st.markdown("**Model Selection and Training**")
+    """
+        We used the sklearn [LatentDirichletAllocation](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html)
+    class for our topic model. Initially we had built the topic model on the entire disaster tweet dataset. However, it became clear that
+    the topics we were generating were suboptimal. More specifically, the topics were blended across the various disaster types leading to poor
+    interpretability. To address this, we decided to train a separate topic model for each disaster type. While this introduced additional
+    algorithmic complexity, it turned out to be the right approach, as our topics became much more concise and easily interpretable. 
+    
+    The single key parameter for the LDA model is the "n_components" parameter. After some initial experimentation,
+    it seemed that an n_components value between 2-4 was returning relatively concise topics. Eventually we would perform a more
+    robust hyperparameter tuning exercise to systematically estimate the optimal number of topics, but initially we set n_components = 3,
+    so we could continue with our development work. From here, we fine-tuned various aspects of our topic modeling pipeline using log-liklihood
+    scores, perplexity scores and general topic interpretability to guide our refinements to the model. 
+    """
+    st.markdown("**Hyperparameter Tuning**")
+    """  
+        The final step before deploying the LDA model was to estimate the optimal number of topics for each disaster type LDA model. We developed a script
+    that performs a grid search exersice, varying the number of topics from 2-6 across each disaster type LDA model. We then computed the
+    log-liklihood and coherence scores for each configuration. When calculating coherence, we used the 'u_mass' measurement as opposed to
+    the 'c_v' measurement. The 'c_v' measurement is known to produce the most reliable results, but opted to use the 'u_mass' measurement
+    to speed up the computation. The full grid search took approximately 4 hrs to run. See figure A below for the results.
+    """
+    st.image("blog_post/blog_data/topic_model_gridsearch_results.png", caption="")
+    st.subheader("Topic Modeling Results")
+
+    st.markdown("**pyLDAvis**")
+    """
+    [pyLDAvis](https://pyldavis.readthedocs.io/en/latest/index.html) is an open source python package for interactive topic modeling visualization.
+    
+    pyLDAvis was a great tool for us to use as we iteratively improved our LDA models for the following key reasons: 
+    1. We can see how well the topics are separated in 2D space by visualizing each topic by it's first two principal components
+    2. We can see the dominant words in each topic along with how frequent those words are across the entire corpus
+    3. Taking a qualitative approach, we can gauge the logical coherence of our topics by observing the top keywords 
+    4. We were able to identify words that were heavily weighted across all the topics and add them to our list of stopwords
+        - By excluding these "common" words across the four disaster types, we were able to improve our coherence scores as each topic became more unique   
+    """
+    top_sentences = pd.read_csv(os.path.join(loc.blog_data, 'lda_top_sentence.csv'))
+    st.subheader('Topic Identification and Exploration')
+    st.write('Below we have given you the ability to select a disaster type and view the corresponding topics. For each disaster type, you can see the topics identified along '
+             'with the most representative tweet from our training data for each topic. You can also interact with the topics and keywords for each disaster type using the pyLDAvis visualization.')
+    disaster_type = st.radio(
+        "Select a Disaster Type:",
+        ('Earthquake (n_topics=2)', 'Fire (n_topics=4)', 'Flood (n_topics=3)', 'Hurricane (n_topics=5)'), horizontal=True)
+
+    with open(os.path.join(loc.blog_data, 'lda_earthquake_pyldavis.html'), 'r') as f:
+        earthquake_ldavis = f.read()
+    with open(os.path.join(loc.blog_data, 'lda_fire_pyldavis.html'), 'r') as f:
+        fire_ldavis = f.read()
+    with open(os.path.join(loc.blog_data, 'lda_flood_pyldavis.html'), 'r') as f:
+        flood_ldavis = f.read()
+    with open(os.path.join(loc.blog_data, 'lda_hurricane_pyldavis.html'), 'r') as f:
+        hurricane_ldavis = f.read()
+
+    if disaster_type == 'Earthquake (n_topics=2)':
+        st.write('You selected Earthquake which we identified as having primarily two topics:')
+        st.write('**Shown below is the most representative tweet for each topic:**')
+        st.table(top_sentences[top_sentences['disaster_type'] == 'earthquake'][['topic', 'tweet_text']])
+        components.v1.html(earthquake_ldavis, width=1300, height=800, scrolling=False)
+    elif disaster_type == 'Fire (n_topics=4)':
+        st.write('You selected Fire which we identified as having primarily four topics:')
+        st.write('**Shown below is the most representative tweet for each topic:**')
+        st.table(top_sentences[top_sentences['disaster_type'] == 'fire'][['topic', 'tweet_text']])
+        components.v1.html(fire_ldavis, width=1300, height=800, scrolling=False)
+    elif disaster_type == 'Flood (n_topics=3)':
+        st.write('You selected Flood which we identified as having primarily three topics:')
+        st.write('**Shown below is the most representative tweet for each topic:**')
+        st.table(top_sentences[top_sentences['disaster_type'] == 'flood'][['topic', 'tweet_text']])
+        components.v1.html(flood_ldavis, width=1300, height=800, scrolling=False)
+    elif disaster_type == 'Hurricane (n_topics=5)':
+        st.write('You selected Hurricane which we identified as having primarily five topics:')
+        st.write('**Shown below is the most representative tweet for each topic:**')
+        st.table(top_sentences[top_sentences['disaster_type'] == 'hurricane'][['topic', 'tweet_text']])
+        components.v1.html(hurricane_ldavis, width=1300, height=800, scrolling=False)
 
 with tab_3:
     st.header(tabs_list[2])

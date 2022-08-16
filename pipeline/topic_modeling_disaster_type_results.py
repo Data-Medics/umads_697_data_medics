@@ -13,6 +13,8 @@ import re, nltk, spacy, gensim
 nltk.download('punkt')
 import pyLDAvis.sklearn
 import pickle
+import locations as loc
+import os
 # + tags=["injected-parameters"]
 # This cell was injected automatically based on your stated upstream dependencies (cell above) and pipeline.yaml preferences. It is temporary and will be removed when you save this notebook
 upstream = {
@@ -163,14 +165,69 @@ for topic in range(lda_model_hurricane.n_components):
     print('----------------------')
     print(f'Topic_{topic}', hurricane_top_sentence[f'Topic_{topic}'][1]['tweet_text'])
 
+# +
+disaster_types = ['earthquake', 'fire', 'flood', 'hurricane']
+def combine_top_sentences():
+    df_combined_top_sent = pd.DataFrame()
+    
+    for disaster in disaster_types:
+        
+        if disaster == 'earthquake':
+            n_components = lda_model_earthquake.n_components
+            for i in range(n_components):
+                topic_string = str(f'Topic_{i}')
+                df = earthquake_top_sentence[topic_string][1][['tweet_text','disaster_type']]
+                df['topic'] = f'Topic {i+1}'
+                df_combined_top_sent = pd.concat([df_combined_top_sent,df])
+        elif disaster =='fire':
+            n_components = lda_model_fire.n_components
+            for i in range(n_components):
+                topic_string = str(f'Topic_{i}')
+                df = fire_top_sentence[topic_string][1][['tweet_text','disaster_type']]
+                df['topic'] = f'Topic {i+1}'
+                df_combined_top_sent = pd.concat([df_combined_top_sent,df])
+
+        elif disaster =='flood':
+            n_components = lda_model_flood.n_components
+            for i in range(n_components):
+                topic_string = str(f'Topic_{i}')
+                df = flood_top_sentence[topic_string][1][['tweet_text','disaster_type']]
+                df['topic'] = f'Topic {i+1}'
+                df_combined_top_sent = pd.concat([df_combined_top_sent,df])
+
+        elif disaster =='hurricane':
+            n_components = lda_model_hurricane.n_components
+            for i in range(n_components):
+                topic_string = str(f'Topic_{i}')
+                df = hurricane_top_sentence[topic_string][1][['tweet_text','disaster_type']]
+                df['topic'] = f'Topic {i+1}'
+                df_combined_top_sent = pd.concat([df_combined_top_sent,df])
+
+    return df_combined_top_sent
+
+
+# -
+
+combined_top_sentences = combine_top_sentences()
+combined_top_sentences.to_csv('..\\blog_post\\blog_data\\lda_top_sentence.csv',header=True)
+
 # + tags=[]
 
 
 
 # + tags=[]
 pyLDAvis.enable_notebook()
-panel = pyLDAvis.sklearn.prepare(lda_model_earthquake, earthquake_text_vectorized, vectorizer, mds='tsne')
+panel_earthquake = pyLDAvis.sklearn.prepare(lda_model_earthquake, earthquake_text_vectorized, vectorizer, mds='tsne',sort_topics=False)
+panel_fire = pyLDAvis.sklearn.prepare(lda_model_fire, fire_text_vectorized, vectorizer, mds='tsne',sort_topics=False)
+panel_flood = pyLDAvis.sklearn.prepare(lda_model_flood, flood_text_vectorized, vectorizer, mds='tsne',sort_topics=False)
+panel_hurricane = pyLDAvis.sklearn.prepare(lda_model_hurricane, hurricane_text_vectorized, vectorizer, mds='tsne',sort_topics=False)
 panel
 
 # + tags=[]
+pyLDAvis.save_html(panel_earthquake, '..\\blog_post\\blog_data\\lda_earthquake_pyldavis.html')
+pyLDAvis.save_html(panel_fire, '..\\blog_post\\blog_data\\lda_fire_pyldavis.html')
+pyLDAvis.save_html(panel_flood, '..\\blog_post\\blog_data\\lda_flood_pyldavis.html')
+pyLDAvis.save_html(panel_hurricane, '..\\blog_post\\blog_data\\lda_hurricane_pyldavis.html')
+# -
+
 
