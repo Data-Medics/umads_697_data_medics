@@ -7,6 +7,7 @@ import sys
 import re
 import datetime
 import spacy
+from streamlit import components
 
 sys.path.insert(0, "./pipeline")
 import locations as loc
@@ -152,6 +153,55 @@ with tab_2:
     """
     st.image("blog_post/blog_data/topic_model_gridsearch_results.png", caption="")
     st.subheader("Topic Modeling Results")
+
+    st.markdown("**pyLDAvis**")
+    """
+    [pyLDAvis](https://pyldavis.readthedocs.io/en/latest/index.html) is an open source python package for interactive topic modeling visualization.
+    
+    pyLDAvis was a great tool for us to use as we iteratively improved our LDA models for the following key reasons: 
+    1. We can see how well the topics are separated in 2D space by visualizing each topic by it's first two principal components
+    2. We can see the dominant words in each topic along with how frequent those words are across the entire corpus
+    3. Taking a qualitative approach, we can gauge the logical coherence of our topics by observing the top keywords 
+    4. We were able to identify words that were heavily weighted across all the topics and add them to our list of stopwords
+        - By excluding these "common" words across the four disaster types, we were able to improve our coherence scores as each topic became more unique   
+    """
+    top_sentences = pd.read_csv(os.path.join(loc.blog_data, 'lda_top_sentence.csv'))
+    st.subheader('Topic Identification and Exploration')
+    st.write('Below we have given you the ability to select a disaster type and view the corresponding topics. For each disaster type, you can see the topics identified along '
+             'with the most representative tweet from our training data for each topic. You can also interact with the topics and keywords for each disaster type using the pyLDAvis visualization.')
+    disaster_type = st.radio(
+        "Select a Disaster Type:",
+        ('Earthquake (n_topics=2)', 'Fire (n_topics=4)', 'Flood (n_topics=3)', 'Hurricane (n_topics=5)'), horizontal=True)
+
+    with open(os.path.join(loc.blog_data, 'lda_earthquake_pyldavis.html'), 'r') as f:
+        earthquake_ldavis = f.read()
+    with open(os.path.join(loc.blog_data, 'lda_fire_pyldavis.html'), 'r') as f:
+        fire_ldavis = f.read()
+    with open(os.path.join(loc.blog_data, 'lda_flood_pyldavis.html'), 'r') as f:
+        flood_ldavis = f.read()
+    with open(os.path.join(loc.blog_data, 'lda_hurricane_pyldavis.html'), 'r') as f:
+        hurricane_ldavis = f.read()
+
+    if disaster_type == 'Earthquake (n_topics=2)':
+        st.write('You selected Earthquake which we identified as having primarily two topics:')
+        st.write('**Shown below is the most representative tweet for each topic:**')
+        st.table(top_sentences[top_sentences['disaster_type'] == 'earthquake'][['topic', 'tweet_text']])
+        components.v1.html(earthquake_ldavis, width=1300, height=800, scrolling=False)
+    elif disaster_type == 'Fire (n_topics=4)':
+        st.write('You selected Fire which we identified as having primarily four topics:')
+        st.write('**Shown below is the most representative tweet for each topic:**')
+        st.table(top_sentences[top_sentences['disaster_type'] == 'fire'][['topic', 'tweet_text']])
+        components.v1.html(fire_ldavis, width=1300, height=800, scrolling=False)
+    elif disaster_type == 'Flood (n_topics=3)':
+        st.write('You selected Flood which we identified as having primarily three topics:')
+        st.write('**Shown below is the most representative tweet for each topic:**')
+        st.table(top_sentences[top_sentences['disaster_type'] == 'flood'][['topic', 'tweet_text']])
+        components.v1.html(flood_ldavis, width=1300, height=800, scrolling=False)
+    elif disaster_type == 'Hurricane (n_topics=5)':
+        st.write('You selected Hurricane which we identified as having primarily five topics:')
+        st.write('**Shown below is the most representative tweet for each topic:**')
+        st.table(top_sentences[top_sentences['disaster_type'] == 'hurricane'][['topic', 'tweet_text']])
+        components.v1.html(hurricane_ldavis, width=1300, height=800, scrolling=False)
 
 with tab_3:
     st.header(tabs_list[2])

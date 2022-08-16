@@ -17,9 +17,7 @@ import pickle
 import altair as alt
 from sklearn.model_selection import GridSearchCV
 from collections import defaultdict
-from PIL import Image
 import os
-from altair_saver import save
 from tqdm import tqdm
 import numpy as np
 
@@ -208,7 +206,7 @@ coherence_df = pd.DataFrame(coherence_results)
 coherence_df = coherence_df.stack().reset_index().rename(columns={'level_0':'n_topics','level_1':'disaster_type'})
 coherence_df['coherence_score'] = coherence_df[0].apply(lambda x: x[1])
 coherence_df = coherence_df[['n_topics','disaster_type','coherence_score']]
-coherence_df
+
 
 # +
 base = alt.Chart(coherence_df).mark_line().encode(
@@ -235,4 +233,4 @@ n_topics_coherence_chart = base.properties(
 
 n_topics_coherence_chart
 
-
+coherence_df.to_csv('..\\blog_post\\blog_data\\lda_coherence_results.csv')
