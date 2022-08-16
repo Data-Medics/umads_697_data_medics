@@ -15,8 +15,12 @@ of natural disasters based on the dynamics of the tweet info.
 Some possible ways this system can evolve in the future: 
 - __Building a batch or a near-realtime system__ that pulls the tweets from the past hour and
 analyses them, publishing a report with the result. This will allow someone to follow up
-daily of what is going on in the world
-- __Realtime alerting__ when some truly disastrous/important happen with location details and other info
+daily of what is going on in the world.
+- __Collecting and interpreting the disaster information over longer period of time__ - like months and
+years. Unfortunately Twitter limits how far back in time you can go through the APIs and obtain the
+relevant info. Therefore, some additional storage needs to be added, so the long-term data are available
+for additional analysis and insights. 
+- __Doing a realtime alerting__ when some truly disastrous/important happen with location details and other info
 - __Adding a multilingual support__ - presently the system interprets tweets just in English,
 and as a result it may be missing important information for locations and countries that 
 use different languages.

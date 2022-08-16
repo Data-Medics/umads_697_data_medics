@@ -79,3 +79,9 @@ because in the tweet is starts with a capital letter:
 The exploration also allows us to randomly sample tweets for multiple overlapping locations and understand
 better how are they connected.
 
+## Final observations and conclusions
+
+Interactive visualization can be a powerful tool to provide a deeper understanding of the natural
+disasters in the world that are going on at a particular time, provide an insight about the affected
+locations and how are they related and grouped, and also sample the tweets content and get the exact
+details of what they try to communicate. 
