@@ -2,7 +2,7 @@
 
 With the disaster tweets analysis project we did explore various ML models
 capable of predicting a label of an individual tweets, determining that the simpler one
-(Logistic Regression) did as good of a job for a multiclass classification. Furthermore,
+(Logistic Regression) did as good as the Neural Network one for this multiclass classification. Furthermore,
 we did an unsupervised topic modeling and extracted topic terms/tokens that we used to
 query recent disaster tweets, then identified which disaster in a disaster category is 
 dominant for a particular timeframe and what are the present active disasters. In addition,
