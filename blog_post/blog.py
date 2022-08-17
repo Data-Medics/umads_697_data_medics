@@ -45,11 +45,11 @@ st.set_page_config(layout="wide")
 st.title('DATA MEDICS')
 st.header('Disaster Tweet Pipeline')
 tabs_list = ["Project Summary", "Topic Modeling", "Tweet Classification", "Recent Tweets - Comparative Analysis", 
-"Recent Tweets - Individual Analysis", "Real Time Tweet Analysis", "Additional Information"]
-tab_1, tab_2, tab_3, tab_4, tab_5, tab_6, tab_7 = st.tabs(tabs_list)
+"Recent Tweets - Individual Analysis", "Real Time Tweet Analysis", "Final Summary", "Additional Information"]
+tab_1, tab_2, tab_3, tab_4, tab_5, tab_6, tab_7, tab_8 = st.tabs(tabs_list)
 with tab_1:
     st.header(tabs_list[0])
-    st.subheader("Project Overview")
+    st.subheader("Overview")
     """Quality information is incredibly difficult to obtain following a major natural disaster and finding particular information can make a huge difference to those affected.  Lots of pertinent information is posted on Twitter following natural disasters, but it can be extremely challenging to sift through hundreds of thousands of tweets for the desired information.  To help solve this problem we built a one-stop-natural-disaster-information-shop.  Powered by our machine learning models, we make it easy to filter tweets into specific categories based on the information the user is trying to find.  We use natural language processing and topic models to search Twitter for tweets specific to different types of natural disasters.  From here we provide a wide variety of carefully curated, useful information ranging from geo-spatial analysis to understand the exact locations and severity of the natural disaster to parsing the Twitterverse for actionable behaviors.  The period following a natural disaster is incredibly difficult and dangerous for all those involved - our tool aims to make the recovery process easier and more efficient with better outcomes for those affected."""
     
     st.subheader("Historical Data")
@@ -286,20 +286,34 @@ reasonable. The labels the algorithm learned to predict were as follow:
     We alo tried the Gradient Boosting Classifier, but we have to interrupt it, because it was taking too
     long to train to be practical.""")
 
-    st.write("""
-    There is a separate section on the more advanced neural network algorithms that we tried. However, the 
-    results from them were very compatible with the logistic regression one. Therefore, the added complexity
-    did not bring any substantial benefit, and we decided to proceed with the simpler one for the rest of the 
-    project effort.
+    st.subheader("Deep Learning Models")
+    """
+    To complete our model evaluation we also chose to test several variations of deep learning models. Given the high performance on many benchmark assessments 
+    that neural networks have achieved in the past several years, and especially their performance on natural language data we wanted to test several neural networks 
+    on our data set. To begin we built a fairly simple Embedding Bag model using PyTorch. An embedding bag can be thought of as a two step process (although this is 
+    not implemented as a two step process in PyTorch). First, all the sentences in a batch are combined into one long tensor and the tensor is embedded into some 
+    n-dimensional space, also known as the embedding dimension, which is chosen by the user. Next, a reduction (mean, min, max, etc.) is applied across the embedded 
+    latent dimension and this is passed to a fully connected layer which then produces the predictions. This neural architecture is similar to what would happen if you 
+    vectorized text via one of the many methods discussed throughout the UMADS program, word2vec, tf-idf, and others, then passed this output into a fully-connected 
+    neural network. It is simple but very fast, and achieved performance similar to that of our standard logistic regression.
 
-    The complete exploration can be found in the category_classification_models.ipynb in the output folder of 
-    the project.
-    """)
+    However, one major weakness of the embedding algorithm is that it does not consider the order of the words or structure of the sentence - all words are embedded simultaneously. 
+    We felt it would be valuable to also evaluate a more sophisticated model that makes some of these considerations. For this we chose to incorporate a Long-Short Term Memory (LSTM) neural network. 
+    The architecture was similar to above; the network included an embedding layer (although not an embedding bag - the sentence vectors were not reduced after the embedding) followed by a LSTM 
+    followed by several fully connected layers. We hoped that the LSTM and its ability to consider a tweet as an entity, not just a collection of words, would improve our classification accuracy. 
+    Unfortunately this was not the case. Even after hyperparameter tuning and several iterations the model architecture (ex: number of layers, size of embedding and hidden dims, bidirectionality, and more) 
+    we were not able to surpass the accuracy of the simpler logistic regression and embedding bag models. After many epochs we also noticed that the model would begin to overfit and perform very well on the 
+    training data while not gaining the same accuracy increases on the validation set.
 
-    st.markdown("**Final observations and conclusions**")
-    st.write("""
-    At the end, and based on the observed scores and results, we decided to use the tweet tokenizer with a
-    multiclass classification logistic regression algorithm.""")
+    While it is possible with more finetuning we would have been able to make slight increases in the model accuracy, we felt the model was limited by the data in 
+    several ways. First, there is such a wide variation in the structure of the texts the words are just as important as the structure, which means that using a LSTM will not significantly increase the 
+    accuracy of the model Additionally, we were working with a fairly small data set, only about 50k records, which impacts the ability of model to learn the data.
+    """
+
+    st.markdown("**Final Observations and Conclusions**")
+    """
+    In the end we decided to go with a simpler logistic regression model because it is easier to build, train, and maintain than the other deep learning models we tested while performing on par with these models.
+    """
 
 with tab_4:
     st.header(tabs_list[3])
@@ -651,8 +665,8 @@ with tab_6:
     
     v_spacer(height=3)
     
-    nlp = spacy.load("en_core_web_sm")
-    stopwords = nlp.Defaults.stop_words
+    # nlp = spacy.load("en_core_web_sm")
+    # stopwords = nlp.Defaults.stop_words
     col1, col2 = st.columns(2)
 
     with col1:
@@ -670,7 +684,8 @@ with tab_6:
 
 
     # load data
-    action_tweets = pd.read_csv(os.path.join(loc.blog_data, "action_tweets_data_sample.csv"))
+    # use .pkl not .csv because .csv does not preserve the Spacy text
+    action_tweets = pd.read_pickle(os.path.join(loc.blog_data, "action_tweets_data_sample.pkl"))
     
     # create filter
     date_filter_action_tweets = pd.to_datetime(action_tweets.created_at).apply(lambda x: x.date()) >= start_date_action_tweets
@@ -678,12 +693,9 @@ with tab_6:
     # apply filter
     action_tweets_filtered = action_tweets[date_filter_action_tweets]
     
-    # add spacy nlp
-    action_tweets_filtered["spacy_text"] = action_tweets_filtered["spacy_text"].apply(nlp)
-    
     regex = re.compile('|'.join(re.escape(x) for x in verb_list), re.IGNORECASE)
 
-    for idx, data in action_tweets_filtered.head(10).iterrows():
+    for idx, data in action_tweets_filtered.head(20).iterrows():
         # find the recommended action
         verb_matches = re.findall(regex, data["tweet_text"])
         if len(set(verb_matches).intersection(set(verb_types))) < 1:
@@ -724,3 +736,38 @@ with tab_6:
 with tab_7:
     st.header(tabs_list[6])
 
+    st.subheader("Final Summary and Future Evolution of the System")
+    """
+    With the disaster tweets analysis project we did explore various ML models
+    capable of predicting a label of an individual tweets, determining that the simpler one
+    (Logistic Regression) did as good as the Neural Network one for this multiclass classification. Furthermore,
+    we did an unsupervised topic modeling and extracted topic terms/tokens that we used to
+    query recent disaster tweets, then identified which disaster in a disaster category is 
+    dominant for a particular timeframe and what are the present active disasters. In addition,
+    we extracted the locations from a sample of recent tweets and provided various interactive
+    visualization and relationships between different locations, and also collected and showed
+    different actions as recommended by the tweet authors. In essence, we build a system
+    that can build and present a quite accurate picture of what is going on in the world in terms
+    of natural disasters based on the dynamics of the tweet info.
+
+    Some possible ways this system can evolve in the future: 
+    * **Building a batch or a near-realtime system** that pulls the tweets from the past hour and
+    analyses them, publishing a report with the result. This will allow someone to follow up
+    daily of what is going on in the world.
+    * **Collecting and interpreting the disaster information over longer period of time** - like months and
+    years. Unfortunately Twitter limits how far back in time you can go through the APIs and obtain the
+    relevant info. Therefore, some additional storage needs to be added, so the long-term data are available
+    for additional analysis and insights. 
+    * **Doing a realtime alerting* when some truly disastrous/important happen with location details and other info
+    * **Adding a multilingual support** - presently the system interprets tweets just in English,
+    and as a result it may be missing important information for locations and countries that 
+    use different languages.
+    * **Extracting other Twitter information, not just for disasters**, but for other scenarios -
+    geo-political, stock market, energy prices, government actions etc. 
+    * **Interpreting information not just from tweets, but other news sources** - theoretically
+    other NLP sources are not that different as compared to the tweets. So they can be used as
+    a complimentary or a primary source of the required information.
+    """
+
+with tab_8:
+    st.header(tabs_list[7])
