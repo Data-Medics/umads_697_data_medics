@@ -57,6 +57,9 @@ with open(os.path.join(loc.blog_data, "locations"), "wb") as l:
 # filter to only the tweets we are interested in - those callling for an action
 action_tweets = df[df.predicted_class == "rescue_volunteering_or_donation_effort"].copy()
 
-action_tweets.to_csv(os.path.join(loc.blog_data, "action_tweets_data_sample.csv"), index=False)
+# add spacy nlp
+action_tweets["spacy_text"] = action_tweets["spacy_text"].apply(nlp)
+
+action_tweets.to_pickle(os.path.join(loc.blog_data, "action_tweets_data_sample.pkl"))
 
 
