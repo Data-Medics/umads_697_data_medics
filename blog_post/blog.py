@@ -736,7 +736,7 @@ with tab_6:
 with tab_7:
     st.header(tabs_list[6])
 
-    st.subheader("Final Summary and Future Evolution of the System")
+    st.subheader("Conclusions and Future Evolution of the System")
     """
     With the disaster tweets analysis project we did explore various ML models
     capable of predicting a label of an individual tweets, determining that the simpler one
@@ -751,23 +751,29 @@ with tab_7:
     of natural disasters based on the dynamics of the tweet info.
 
     Some possible ways this system can evolve in the future: 
-    * **Building a batch or a near-realtime system** that pulls the tweets from the past hour and
-    analyses them, publishing a report with the result. This will allow someone to follow up
-    daily of what is going on in the world.
-    * **Collecting and interpreting the disaster information over longer period of time** - like months and
-    years. Unfortunately Twitter limits how far back in time you can go through the APIs and obtain the
-    relevant info. Therefore, some additional storage needs to be added, so the long-term data are available
-    for additional analysis and insights. 
-    * **Doing a realtime alerting* when some truly disastrous/important happen with location details and other info
-    * **Adding a multilingual support** - presently the system interprets tweets just in English,
-    and as a result it may be missing important information for locations and countries that 
-    use different languages.
-    * **Extracting other Twitter information, not just for disasters**, but for other scenarios -
-    geo-political, stock market, energy prices, government actions etc. 
-    * **Interpreting information not just from tweets, but other news sources** - theoretically
-    other NLP sources are not that different as compared to the tweets. So they can be used as
-    a complimentary or a primary source of the required information.
+    * **Building a batch or a near-realtime system** that pulls the tweets from the past hour and analyses them, publishing a report with the result. This will allow someone to follow up daily of what is going on in the world.
+    * **Collecting and interpreting the disaster information over longer period of time** - like months and years. Unfortunately Twitter limits how far back in time you can go through the APIs and obtain the relevant info. Therefore, some additional storage needs to be added, so the long-term data are available for additional analysis and insights. 
+    * **Doing a realtime alerting** when some truly disastrous/important happen with location details and other info
+    * **Adding a multilingual support** - presently the system interprets tweets just in English, and as a result it may be missing important information for locations and countries that use different languages.
+    * **Extracting other Twitter information, not just for disasters**, but for other scenarios: geo-political, stock market, energy prices, government actions etc. 
+    * **Interpreting information not just from tweets, but other news sources** - theoretically other NLP sources are not that different as compared to the tweets. So they can be used as a complimentary or a primary source of the required information.
     """
 
 with tab_8:
     st.header(tabs_list[7])
+
+    st.subheader("Data & Resources")
+    """
+    * [Project Code on Github](https://github.com/Data-Medics/umads_697_data_medics)
+    * Labeled Twitter Data
+        * [CrisisNLP](https://crisisnlp.qcri.org/humaid_dataset.html#)
+    * Leveraged Python Libraries
+        * [Tweepy](https://www.tweepy.org/)
+        * [Spacy](https://spacy.io/)
+        * [PyLDA](https://pyldavis.readthedocs.io/en/latest/readme.html)
+        * [PyTorch](https://pytorch.org/)
+        * [Pandas](https://pandas.pydata.org/)
+        * [Sklearn](https://scikit-learn.org/)
+    * This app was built with [Streamlit](https://streamlit.io/)
+
+    """
