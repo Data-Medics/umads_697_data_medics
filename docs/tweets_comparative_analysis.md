@@ -17,7 +17,7 @@ For the purpose of this effort we have obtained and analyzed tweets for the week
 and August 7th, 2022.
 
 ## Obtaining sample tweets by querying the Twitter APIs
-The first step in analyzing the most resent disaster tweets is obtaining them from Twitter. The solution we
+The first step in analyzing the most recent disaster tweets is obtaining them from Twitter. The solution we
 settled on to achieve that is as follows:
 - Using the keyword tokens obtained from the unsupervised topic exploration of the disaster sample, we
 query the Twitter API for the past six days (this is max time allowed to go back) and for the tweets up to
