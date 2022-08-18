@@ -50,7 +50,7 @@ tab_1, tab_2, tab_3, tab_4, tab_5, tab_6, tab_7, tab_8 = st.tabs(tabs_list)
 with tab_1:
     st.header(tabs_list[0])
     st.subheader("Overview")
-    """Quality information is incredibly difficult to obtain following a major natural disaster and finding particular information can make a huge difference to those affected.  Lots of pertinent information is posted on Twitter following natural disasters, but it can be extremely challenging to sift through hundreds of thousands of tweets for the desired information.  To help solve this problem we built a one-stop-natural-disaster-information-shop.  Powered by our machine learning models, we make it easy to filter tweets into specific categories based on the information the user is trying to find.  We use natural language processing and topic models to search Twitter for tweets specific to different types of natural disasters.  From here we provide a wide variety of carefully curated, useful information ranging from geo-spatial analysis to understand the exact locations and severity of the natural disaster to parsing the Twitterverse for actionable behaviors.  The period following a natural disaster is incredibly difficult and dangerous for all those involved - our tool aims to make the recovery process easier and more efficient with better outcomes for those affected."""
+    """Quality information is incredibly difficult to obtain following a major natural disaster and finding specific, actionable information can make a huge difference to those affected.  Lots of pertinent information is posted on Twitter following natural disasters but it can be extremely challenging to sift through hundreds of thousands of tweets for the desired information.  To help solve this problem we built a one-stop-natural-disaster-information-shop.  Powered by our machine learning models, we make it easy to filter tweets into specific categories based on the information the user is trying to find.  We use natural language processing and topic models to search Twitter for tweets specific to different types of natural disasters.  We provide a wide variety of carefully curated, useful information ranging from geo-spatial analysis to understand the exact locations and severity of the natural disaster to parsing the Twitterverse for actionable behaviors.  The period following a natural disaster is incredibly difficult and dangerous for all those involved - our tool aims to make the recovery process easier and more efficient with better outcomes for those affected."""
     
     st.subheader("Historical Data")
     """All models in this project were trained on a data set collected and curated by HumAid.  The data consists of ~70,000 tweets across 20 natural disasters spanning from 2016 to 2018.  The tweets were labeled by human assistants and are classified as belonging to one of the following 10 categories:
@@ -76,19 +76,34 @@ A sample of the data can be seen here:
     
     st.subheader("Real Time Data")
     """
-    However, giving people critical information about a disaster that happened several years ago is of limited value.  For our project to truly help, we needed to apply our models and analysis to live Twitter data around current natural disasters.  To do this we utilized [Tweepy](https://www.tweepy.org/) and wrote several functions that pulled real time Twitter based on our disaster specific search terms which we then used as inputs to our model.
+    However, giving people critical information about a disaster that happened several years ago is of limited value.  For our project to truly help, we needed to apply our models and analysis to live Twitter data around current natural disasters.  To do this we utilized [Tweepy](https://www.tweepy.org/) and built an app that pullw real time Twitter based on our disaster specific search terms which we then use as inputs to our models.
     """
     st.subheader("Project Plan")
     """
-    Our project structure uses the following form:
-    PLACEHOLDER FOR IMAGE
+    In the beginning we scoped our project as a fairly simple pipeline: we would train several models from labeled disaster Tweet data then use these trained models to produce 
+    actionable insights and information for those involved in current natural disasters derived from Tweets about current natural disasters.  Along the way we used NLP-centric unsupervised learning techniques to buttress our work - for example, 
+    we used the words from topics most related to specfic natural disasters as our queries when searching real time Twitter data for current disasters.  Our original project plan layout looked like
+    the following:
     """
-    st.subheader("Project Layout")
+    st.image(os.path.join(loc.blog_data, "model_pipeline.png"), caption=None)
+
+
     """
-    The following tabs will walk through our work, starting with raw Tweet data all the way to producing actionable recommendations for current natural disasters.
+    The information derived from these topic models, as well as the additional models trained on the labeled data is then applied to real-time Tweets to generate useful information.  The end product, an app built in Streamlit was planned to do the following:
     """
-    st.subheader("Common Natural Disasters")
-    st.image(os.path.join(loc.blog_data, "disasters_image.png"), caption="Disasters")
+    st.image(os.path.join(loc.blog_data, "streamlit_app.png"), caption=None)
+
+    st.subheader("Blog Layout")
+    """
+    The diagrams above describe our initial plan, what we hoped to accomlish and why we felt the output would be useful to people in crises in addition to being an interesting data science problem.  The rest of the blog, as laid out on the following tabs will walk through our work, starting with raw Tweet data all the way to producing actionable recommendations for current natural disasters and next steps.
+    * Topic Modeling
+    * Tweet Classification
+    * Recent Tweets - Comparative Analysis
+    * Recent Tweets - Individual Analysis
+    * Real Time Tweet Analysis
+    * Final Summary
+    * Additional Information
+    """
     
     
 with tab_2:
@@ -310,7 +325,7 @@ reasonable. The labels the algorithm learned to predict were as follow:
     accuracy of the model Additionally, we were working with a fairly small data set, only about 50k records, which impacts the ability of model to learn the data.
     """
 
-    st.markdown("**Final Observations and Conclusions**")
+    st.subheader("Final Observations and Conclusions")
     """
     In the end we decided to go with a simpler logistic regression model because it is easier to build, train, and maintain than the other deep learning models we tested while performing on par with these models.
     """
@@ -362,18 +377,19 @@ with tab_4:
     the retrieval process are in the `recent_tweets_*.ipynb` notebooks in the project output folder."""
 
     st.subheader("Assigning a class label on the retrieved disaster tweets")
-    """The obtained tweets are labeled with one of following categories using the vectorizer and the classification
-    algorithm prepared in the upstream steps:
-      * rescue_volunteering_or_donation_effort
-      * other_relevant_information
-      * requests_or_urgent_needs
-      * injured_or_dead_people
-      * infrastructure_and_utility_damage
-      * sympathy_and_support
-      * caution_and_advice
-      * not_humanitarian
-      * displaced_people_and_evacuations
-      * missing_or_found_people
+    """The obtained tweets are labeled with one of following categories using the vectorizer and the classification algorithm prepared in the upstream steps:"""
+
+    """
+    * rescue_volunteering_or_donation_effort
+    * other_relevant_information
+    * requests_or_urgent_needs
+    * injured_or_dead_people
+    * infrastructure_and_utility_damage
+    * sympathy_and_support
+    * caution_and_advice
+    * not_humanitarian
+    * displaced_people_and_evacuations
+    * missing_or_found_people
     The completed dataset is ready for further analysis.
     """
     st.subheader("Determining the dominating disaster in a category")
@@ -736,7 +752,7 @@ with tab_6:
 with tab_7:
     st.header(tabs_list[6])
 
-    st.subheader("Final Summary and Future Evolution of the System")
+    st.subheader("Conclusions and Future Evolution of the System")
     """
     With the disaster tweets analysis project we did explore various ML models
     capable of predicting a label of an individual tweets, determining that the simpler one
@@ -751,23 +767,29 @@ with tab_7:
     of natural disasters based on the dynamics of the tweet info.
 
     Some possible ways this system can evolve in the future: 
-    * **Building a batch or a near-realtime system** that pulls the tweets from the past hour and
-    analyses them, publishing a report with the result. This will allow someone to follow up
-    daily of what is going on in the world.
-    * **Collecting and interpreting the disaster information over longer period of time** - like months and
-    years. Unfortunately Twitter limits how far back in time you can go through the APIs and obtain the
-    relevant info. Therefore, some additional storage needs to be added, so the long-term data are available
-    for additional analysis and insights. 
-    * **Doing a realtime alerting* when some truly disastrous/important happen with location details and other info
-    * **Adding a multilingual support** - presently the system interprets tweets just in English,
-    and as a result it may be missing important information for locations and countries that 
-    use different languages.
-    * **Extracting other Twitter information, not just for disasters**, but for other scenarios -
-    geo-political, stock market, energy prices, government actions etc. 
-    * **Interpreting information not just from tweets, but other news sources** - theoretically
-    other NLP sources are not that different as compared to the tweets. So they can be used as
-    a complimentary or a primary source of the required information.
+    * **Building a batch or a near-realtime system** that pulls the tweets from the past hour and analyses them, publishing a report with the result. This will allow someone to follow up daily of what is going on in the world.
+    * **Collecting and interpreting the disaster information over longer period of time** - like months and years. Unfortunately Twitter limits how far back in time you can go through the APIs and obtain the relevant info. Therefore, some additional storage needs to be added, so the long-term data are available for additional analysis and insights. 
+    * **Doing a realtime alerting** when some truly disastrous/important happen with location details and other info
+    * **Adding a multilingual support** - presently the system interprets tweets just in English, and as a result it may be missing important information for locations and countries that use different languages.
+    * **Extracting other Twitter information, not just for disasters**, but for other scenarios: geo-political, stock market, energy prices, government actions etc. 
+    * **Interpreting information not just from tweets, but other news sources** - theoretically other NLP sources are not that different as compared to the tweets. So they can be used as a complimentary or a primary source of the required information.
     """
 
 with tab_8:
     st.header(tabs_list[7])
+
+    st.subheader("Data & Resources")
+    """
+    * [Project Code on Github](https://github.com/Data-Medics/umads_697_data_medics)
+    * Labeled Twitter Data
+        * [CrisisNLP](https://crisisnlp.qcri.org/humaid_dataset.html#)
+    * Leveraged Python Libraries
+        * [Tweepy](https://www.tweepy.org/)
+        * [Spacy](https://spacy.io/)
+        * [PyLDA](https://pyldavis.readthedocs.io/en/latest/readme.html)
+        * [PyTorch](https://pytorch.org/)
+        * [Pandas](https://pandas.pydata.org/)
+        * [Sklearn](https://scikit-learn.org/)
+    * This app was built with [Streamlit](https://streamlit.io/)
+
+    """
