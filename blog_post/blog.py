@@ -8,6 +8,7 @@ import re
 import datetime
 import spacy
 from streamlit import components
+import altair as alt
 
 sys.path.insert(0, "./pipeline")
 import locations as loc
@@ -173,9 +174,32 @@ with tab_2:
     that performs a grid search exersice, varying the number of topics from 2-6 across each disaster type LDA model. We then computed the
     log-liklihood and coherence scores for each configuration. When calculating coherence, we used the 'u_mass' measurement as opposed to
     the 'c_v' measurement. The 'c_v' measurement is known to produce the most reliable results, but opted to use the 'u_mass' measurement
-    to speed up the computation. The full grid search took approximately 4 hrs to run. See figure A below for the results.
+    to speed up the computation. In the future, if we have more computing resources available at our disposal, we would choose to run the 'c_v' coherence measurement for better accuracy.
+     The full grid search took approximately 4 hrs to run. See the figure below for the results.
     """
-    st.image("blog_post/blog_data/topic_model_gridsearch_results.png", caption="")
+    coherence_df = pd.read_csv(os.path.join(loc.blog_data, 'lda_coherence_results.csv'))
+    base = alt.Chart(coherence_df).mark_line().encode(
+        x=alt.X('n_topics:O',title = 'Number of Topics',axis=alt.Axis(labelAngle=0)),
+        y=alt.Y('coherence_score:Q',title = 'Mean Coherence Score'),
+        facet=alt.Facet('disaster_type:N', title=None,header=alt.Header(labelFontSize=20))
+    )
+
+    n_topics_coherence_chart = base.properties(
+            title='Optimal Number of Topics (Mean Coherence Score)',
+            width=600,
+            height=400
+        ).configure_title(
+            fontSize=20,
+            anchor='start',
+            color='black'
+        ).configure_axis(
+            labelFontSize=20,
+            titleFontSize=20
+        ).configure_legend(
+            labelFontSize=20,
+            titleFontSize=20
+    )
+    st.write(n_topics_coherence_chart)
     st.subheader("Topic Modeling Results")
 
     st.markdown("**pyLDAvis**")
