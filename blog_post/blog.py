@@ -179,7 +179,7 @@ with tab_2:
     """
     coherence_df = pd.read_csv(os.path.join(loc.blog_data, 'lda_coherence_results.csv'))
     base = alt.Chart(coherence_df).mark_line().encode(
-        x=alt.X('n_topics:O',title = 'Number of Topics',axis=alt.Axis(labelAngle=0)),
+        x=alt.X('n_topics:Q',title = 'Number of Topics',axis=alt.Axis(labelAngle=0)),
         y=alt.Y('coherence_score:Q',title = 'Mean Coherence Score'),
         facet=alt.Facet('disaster_type:N', title=None,header=alt.Header(labelFontSize=20))
     )
