@@ -1,6 +1,6 @@
 # Exploring the individual recent disaster tweets
 
-## Summary
+## Overview
 The comparative analysis section explained how the recent disaster tweets were queried and retrieved,
 and then processed for finding a dominant disaster type per class. The following section continues the 
 exploration with doing a location extraction and interpretation, also shows creative ways for
