@@ -5,7 +5,7 @@
 - [vectorizer_svd.ipynb](../pipeline/output/vectorizer_svd.ipynb)
 - [vectorizer_spacy.ipynb](../pipeline/output/vectorizer_spacy.ipynb)
 - [vectorizer_dense.ipynb](../pipeline/output/vectorizer_dense.ipynb)
-- [vectorizer_countVec](../pipeline/output/vectorizer_countVec)
+- [vectorizer_countVec.ipynb](../pipeline/output/vectorizer_countVec.ipynb)
 #### 2. Classification models
 - [category_classification_models.ipynb](../pipeline/output/category_classification_models.ipynb)
 - [nn_classification_analysis.ipynb](../pipeline/output/nn_classification_analysis.ipynb)
