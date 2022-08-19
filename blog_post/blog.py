@@ -46,9 +46,9 @@ st.set_page_config(layout="wide")
 st.title('DATA MEDICS')
 st.header('Disaster Tweet Pipeline')
 st.markdown('Created By:')
-st.markdown('**Tyler Zupan**'')
-st.markdown('**Robert Gillin**'')
-st.markdown('**Miroslav Boussarov**'')
+st.markdown('**Tyler Zupan**')
+st.markdown('**Robert Gillin**')
+st.markdown('**Miroslav Boussarov**')
 
 
 tabs_list = ["Project Summary", "Topic Modeling", "Tweet Classification", "Recent Tweets - Comparative Analysis", 
