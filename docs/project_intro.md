@@ -17,6 +17,6 @@ All models in this project were trained on a data set collected and curated by H
 * Rescue volunteering or donation effort
 * Sympathy and support
 
-###Real Time Data
+### Real Time Data
 
 Giving people critical information about a disaster that happened several years ago is of limited value.  For our project to truly help, we needed to apply our models and analysis to live Twitter data around current natural disasters.  To do this we utilized [Tweepy](https://www.tweepy.org/) and wrote several functions that pulled real time Twitter based on our disaste specific search terms which we then used as inputs to our model.
