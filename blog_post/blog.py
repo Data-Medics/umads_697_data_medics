@@ -45,6 +45,12 @@ def v_spacer(height, sb=False) -> None:
 st.set_page_config(layout="wide")
 st.title('DATA MEDICS')
 st.header('Disaster Tweet Pipeline')
+st.markdown('Created By:')
+st.markdown('**Tyler Zupan**'')
+st.markdown('**Robert Gillin**'')
+st.markdown('**Miroslav Boussarov**'')
+
+
 tabs_list = ["Project Summary", "Topic Modeling", "Tweet Classification", "Recent Tweets - Comparative Analysis", 
 "Recent Tweets - Individual Analysis", "Real Time Tweet Analysis", "Final Summary", "Additional Information"]
 tab_1, tab_2, tab_3, tab_4, tab_5, tab_6, tab_7, tab_8 = st.tabs(tabs_list)
