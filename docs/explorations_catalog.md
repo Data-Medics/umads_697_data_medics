@@ -1,7 +1,7 @@
 # Catalog of the Ploomber-generated notebooks used in the project
 
 #### 1. Vectorization
-- [vectorizer.ipynb]()
+- [vectorizer.ipynb](../pipeline/output/vectorizer.ipynb)
 - [vectorizer_svd.ipynb]()
 - [vectorizer_spacy.ipynb]()
 - [vectorizer_dense.ipynb]()
