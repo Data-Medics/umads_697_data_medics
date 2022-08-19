@@ -1,6 +1,6 @@
 # Tweets Supervised Learning and Class Label Classification
 
-## Summary
+## Overview
 We attempted two kind of classification models on our disaster tweets dataset:
 - __Classifiers that determines if a tweet is a particular disaster (wildfire, flood, hurricane,
 earthquake, non-disaster)__. We tried retrieving a random tweets sample, and used that as a 
@@ -10,7 +10,6 @@ F1 score above 0.93 for the logistic regression one. However, when we attempted 
 random tweeter sample  most of the predicted labels were coming as "hurricane". Therefore,
 we did abandon the idea and resorted to leveraging the tokens from the topic modeling combined
 with a creative twitter search queries.
-
 
 - __Classifiers that computes the class label after getting trained on the tweet disaster dataset.__
 We managed to achieve a macro-F1 score of 0.71 on the test dataset using multi-class classification

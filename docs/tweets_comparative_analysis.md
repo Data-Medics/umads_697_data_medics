@@ -1,6 +1,6 @@
 # Comparative analysis of tweet samples from the past week for different natural disasters
 
-## Summary
+## Overview
 The objective of training tweet classification models for the purpose of this project is to use them later
 on a recent tweets, do an automated analysis and be able to answer questions like that:
 - Is there an active disaster going on?
