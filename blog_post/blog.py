@@ -77,13 +77,13 @@ A sample of the data can be seen here:
     
     st.subheader("Real Time Data")
     """
-    However, giving people critical information about a disaster that happened several years ago is of limited value.  For our project to truly help, we needed to apply our models and analysis to live Twitter data around current natural disasters.  To do this we utilized [Tweepy](https://www.tweepy.org/) and built an app that pullw real time Twitter based on our disaster specific search terms which we then use as inputs to our models.
+    However, giving people critical information about a disaster that happened several years ago is of limited value.  For our project to truly help, we needed to apply our models and analysis to live Twitter data around current natural disasters.  To do this we utilized [Tweepy](https://www.tweepy.org/) and built an app that pulls real time tweats based on our disaster specific search terms which we then use as inputs into our models.
     """
     st.subheader("Project Plan")
     """
-    In the beginning we scoped our project as a fairly simple pipeline: we would train several models from labeled disaster Tweet data then use these trained models to produce 
-    actionable insights and information for those involved in current natural disasters derived from Tweets about current natural disasters.  Along the way we used NLP-centric unsupervised learning techniques to buttress our work - for example, 
-    we used the words from topics most related to specfic natural disasters as our queries when searching real time Twitter data for current disasters.  Our original project plan layout looked like
+    In the beginning, we scoped our project as a fairly simple pipeline: we would train several models from labeled disaster tweet data, then use these trained models to produce 
+    actionable insights and information for those involved in current natural disasters. Along the way we used NLP-centric unsupervised learning techniques to buttress our work - for example, 
+    we used the most relevant disaster related keywords from our topic models as query search terms to gather real time Twitter data for current disasters.  Our original project plan layout looked like
     the following:
     """
     st.image(os.path.join(loc.blog_data, "model_pipeline.png"), caption=None)
@@ -96,7 +96,10 @@ A sample of the data can be seen here:
 
     st.subheader("Blog Layout")
     """
-    The diagrams above describe our initial plan, what we hoped to accomlish and why we felt the output would be useful to people in crises in addition to being an interesting data science problem.  The rest of the blog, as laid out on the following tabs will walk through our work, starting with raw Tweet data all the way to producing actionable recommendations for current natural disasters and next steps.
+    The diagrams above describe our initial plan - what we hoped to accomplish and why we felt the output would be useful 
+    to people in crises, in addition to being an interesting data science problem to solve. The rest of the blog, as laid 
+    out on the following tabs, will walk you through our work - starting with raw tweet data all the way to producing actionable 
+    recommendations for current natural disasters and next steps.
     * Topic Modeling
     * Tweet Classification
     * Recent Tweets - Comparative Analysis
@@ -111,16 +114,18 @@ with tab_2:
     st.header(tabs_list[1])
     st.subheader("Overview")
     """
-        In order to provide actionable recommendations during times of disaster, we needed a way to efficiently query recent and relevant disaster tweets from twitter.
-        To do so we developed a function to extract tweets from the Twitter API based on a query of keywords. The keywords we used to build this query were a direct
-    product of the Latent Dirichlet Allocation (LDA) topic modeling analysis we conducted on the HumAid disaster tweets dataset.
+        In order to provide actionable recommendations during times of disaster, we needed a way to efficiently query 
+        recent and relevant disaster tweets from twitter. To do so, we developed a function to extract tweets from the 
+        Twitter API based on a query of keywords. The keywords we used to build this query were a direct product of the 
+        Latent Dirichlet Allocation (LDA) topic modeling analysis we conducted on the HumAid disaster tweets dataset.
     """
     st.subheader("Topic Modeling Exploratory Analysis")
     st.markdown("**Token Exploration**")
     """
         To gain some initial familiarity with the disaster tweet text, we performed some simple token exploration.
-    More specifically we looked at how many tokens were composed of word characters versus tokens comprised of non-word characters.
-    Tweet text can be very messy, and we would eventually need to decide how to handle hashtags, symbols, retweets and mentions.
+    More specifically we looked at how many tokens were composed of word characters versus tokens comprised of non-word 
+    characters. Tweet text can be very messy, and we would eventually need to decide how to handle hashtags, symbols, 
+    retweets and mentions.
     """
     st.subheader("Model Design")
     st.markdown("**Text Pre-Processing**")
@@ -136,10 +141,10 @@ with tab_2:
     """
     st.markdown("**Lemmatization & Vectorization**")
     """
-        Lemmatization is the process of reducing various inflectional forms of a word to it's base form. We chose lemmatization
-    over stemming because we wanted to retain the morphological structure of words, believing this would be
-    a more robust way to capture topics. Stemming is a more crude approach in which the end or the beginning of a word is cut
-    off to reduce the word to it's root. 
+        Lemmatization is the process of reducing various inflectional forms of a word to it's base form. Stemming is a 
+        more crude approach in which the end or the beginning of a word is cut off to reduce the word to it's root. 
+        We chose lemmatization over stemming because we wanted to retain the morphological structure of words, knowing 
+        this would be a more robust way to capture topics effectively. 
     
     We used the spaCy [Lemmatizer](https://spacy.io/api/lemmatizer) pipeline component to transform our pre-processed tweet text into it's lemmatized form.
     One challenge we encountered when initially building out our topic model, was that our topics were being focused around
@@ -158,9 +163,10 @@ with tab_2:
     """
         We used the sklearn [LatentDirichletAllocation](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html)
     class for our topic model. Initially we had built the topic model on the entire disaster tweet dataset. However, it became clear that
-    the topics we were generating were suboptimal. More specifically, the topics were blended across the various disaster types leading to poor
-    interpretability. To address this, we decided to train a separate topic model for each disaster type. While this introduced additional
-    algorithmic complexity, it turned out to be the right approach, as our topics became much more concise and easily interpretable. 
+    the topics we were generating were suboptimal from a qualitative review perspective. Additionally, the topics were 
+    being blended across the various disaster types leading to poor interpretability. To address this, we decided to train a 
+    separate topic model for each disaster type. While this introduced additional algorithmic complexity, it turned out 
+    to be the right approach, as our topics became much more concise and easily interpretable. 
     
     The single key parameter for the LDA model is the "n_components" parameter. After some initial experimentation,
     it seemed that an n_components value between 2-4 was returning relatively concise topics. Eventually we would perform a more
@@ -171,7 +177,7 @@ with tab_2:
     st.markdown("**Hyperparameter Tuning**")
     """  
         The final step before deploying the LDA model was to estimate the optimal number of topics for each disaster type LDA model. We developed a script
-    that performs a grid search exersice, varying the number of topics from 2-6 across each disaster type LDA model. We then computed the
+    that performs a grid search exersice, varying the number of topics from 2-50 across each disaster type LDA model. We then computed the
     log-liklihood and coherence scores for each configuration. When calculating coherence, we used the 'u_mass' measurement as opposed to
     the 'c_v' measurement. The 'c_v' measurement is known to produce the most reliable results, but opted to use the 'u_mass' measurement
     to speed up the computation. In the future, if we have more computing resources available at our disposal, we would choose to run the 'c_v' coherence measurement for better accuracy.
@@ -214,9 +220,15 @@ with tab_2:
         - By excluding these "common" words across the four disaster types, we were able to improve our coherence scores as each topic became more unique   
     """
     top_sentences = pd.read_csv(os.path.join(loc.blog_data, 'lda_top_sentence.csv'))
-    st.subheader('Topic Identification and Exploration')
-    st.write('Below we have given you the ability to select a disaster type and view the corresponding topics. For each disaster type, you can see the topics identified along '
-             'with the most representative tweet from our training data for each topic. You can also interact with the topics and keywords for each disaster type using the pyLDAvis visualization.')
+
+    st.markdown("**Topic Identification and Exploration**")
+
+    """Below we have given you the ability to select a disaster type and view the corresponding topics we've generated.
+     For each disaster type, you can see the topics identified along with the most representative tweet from our 
+     training data for each topic. You can also interact with the topics and keywords for each disaster type using the 
+     pyLDAvis visualization.
+     """
+
     disaster_type = st.radio(
         "Select a Disaster Type:",
         ('Earthquake (n_topics=2)', 'Fire (n_topics=4)', 'Flood (n_topics=3)', 'Hurricane (n_topics=5)'), horizontal=True)
@@ -258,23 +270,25 @@ with tab_3:
 
     st.markdown("**Summary**")
 
-    st.write("""We attempted two kind of classification models on our disaster tweets dataset:""")
+    st.write("""We attempted two kinds of classification models on our disaster tweets dataset:""")
     
     st.write("""
-1. **Classifiers that determines if a tweet is a particular disaster (wildfire, flood, hurricane,earthquake, non-disaster).** 
-We tried retrieving a random tweets sample, and used that as a 
-"non-disaster" label, and then assigned the "disaster" labels to the tweets from the disaster
-sample. The trained classification algorithms worked very well on the disaster dataset - 
-F1 score above 0.93 for the logistic regression one. However, when we attempted to apply this to a
-random tweeter sample  most of the predicted labels were coming as "hurricane". Therefore,
-we did abandon the idea and resorted to leveraging the tokens from the topic modeling combined
-with a creative twitter search queries.""")
+1. **Classifiers that determine if a tweet pertains to a particular disaster (wildfire, flood, hurricane,earthquake, non-disaster).** 
+Initially, we tried retrieving a sample of random tweets to use as a non-disaster related tweets by applying a "non-disaster" label.
+We then assigned the "disaster" label (i.e. wildfire, flood, hurricane, earthquake) to the tweets from our disaster tweets training
+sample. Our thought was that we would then be able to build a binary classification model off of this combined dataset
+ to determine if a particular tweet was disaster related or not. While our trained classification algorithms performed 
+ very well on the disaster dataset alone - (we achieved an F1 score above 0.93 for the logistic regression model), when 
+ we attempted to apply this classifier to the combined labeled dataset, most of the predicted labels for non-disasters 
+ were labeled as "hurricane" as opposed to "non-disaster". Therefore, we abandoned this approach and resorted to 
+ leveraging the disaster specific keywords from our topic modeling to develop twitter queries.""")
 
     st.write("""
-2. **Classifiers that computes the class label after getting trained on the tweet disaster dataset.**
+2. **Classifiers that compute the class label after getting trained on the disaster tweet dataset.**
+
 We managed to achieve a macro-F1 score of 0.71 on the test dataset using multi-class classification
-logistic regression. We applied the algorithm later on ransom sample tweets from the past week,
-and even we did not have labels there, our observation was that the assigned labels look correct and
+logistic regression. We applied the model later to a random sample tweets from the past week,
+and even though we did not have labeled data there, our observation was that the predicted labels looked correct and
 reasonable. The labels the algorithm learned to predict were as follow:
   - rescue_volunteering_or_donation_effort
   - other_relevant_information
@@ -292,13 +306,14 @@ reasonable. The labels the algorithm learned to predict were as follow:
 
     st.write("""The first step of the data processing is the vectorization, where we find a proper representation of each
     tweet. Once vectorized, we tried to compare the effect of each technique by trying out the respective
-    representation on logistic regression model, to see which one yields the best classification result.
+    representation on the logistic regression model to see which one yields the best classification result.
     The main things we attempted were as follows:
     - Using tweet tokenizer from the nltk library ([TweetTokenizer](https://www.nltk.org/api/nltk.tokenize.casual.html#nltk.tokenize.casual.TweetTokenizer))
     with TF/IDF vectorization. This produced a sparse matrix that can be used in a ML algorithm. This tokenization
-    when used with logistic regression produced an F1 score of 0.714. The generated notebook is vectorizer.ipynb and can be found in the project output folder
-    - Using the same tokenization and vectorization as above, just with adding an SVD step projecting the the 
-    sparse matrix in a lower dimension to produce a more dense matrix. The result was an F1 score of 0.681 and
+    when used with logistic regression produced an F1 score of 0.714. The generated notebook is vectorizer.ipynb and can 
+    be found in the project output folder
+    - Using the same tokenization and vectorization as above, but adding an SVD step to project the 
+    sparse matrix to a reduced dimension. The result was an F1 score of 0.681 and
     the outcome can be seen in vectorizer_svd.ipynb
     - Using [spaCy](https://spacy.io/) library with stemming, stop words removal and again TF/IDF vectorization.
     This again produced a sparse matrix and when tested with a logistic regression model the F1 score was 0.701.
@@ -306,7 +321,7 @@ reasonable. The labels the algorithm learned to predict were as follow:
     - Word2Vec dense matrix vectorization with [gensim](https://github.com/RaRe-Technologies/gensim) library.
     The F1 result we achieved was 0.591 - probably one of the lowest so far. The respective Jupyter notebook 
     is vectorizer_dense.ipynb. 
-    - Count vectorization which ended up being used for the topic modeling effort with generated notebook 
+    - Count vectorization which was only used for the LDA topic modeling effort. The generated notebook is called 
     vectorizer_countVec.ipynb""")
 
     st.write("""
@@ -317,19 +332,18 @@ reasonable. The labels the algorithm learned to predict were as follow:
     st.markdown("**Classification algorithms selection and comparison**")
 
     st.write("""
-    For the class label classification, we attempted the following algorithms and algorithm combinations:""")
-    st.write("- Linear regression - we achieved the 0.710 average macro F1 score leveraging a Grid search technique.") 
+    For the class label classification, we tested the following algorithms and algorithm combinations:""")
+    st.write("- Linear regression - we achieved the 0.710 average macro F1 score leveraging a grid search technique.")
     st.write("""- Random Forest - this algorithm was disappointing for this multiclass scenario with average macro F1 score of 0.207. As a comparison, the dummy classifiers were giving scores from 0.04 to 0.08.""") 
     st.write("""- Multinomial NB - the F1 score was 0.569, better than random forest, but worse as compared to the logistic regression.""")
     st.write("""- Voting classifier, where the three algorithms above were voting on the label. The averaged macro F1 score on this one came to 0.689, again, not as good as the logistic regression, but better than the others.
-    We alo tried the Gradient Boosting Classifier, but we have to interrupt it, because it was taking too
-    long to train to be practical.""")
+    We alo tried the Gradient Boosting Classifier, but we had to interrupt it, because it was taking far too long to train.""")
 
     st.subheader("Deep Learning Models")
     """
-    To complete our model evaluation we also chose to test several variations of deep learning models. Given the high performance on many benchmark assessments 
+    To complete our model evaluation we also tested several deep learning model variations. Given the high performance on many benchmark assessments 
     that neural networks have achieved in the past several years, and especially their performance on natural language data we wanted to test several neural networks 
-    on our data set. To begin we built a fairly simple Embedding Bag model using PyTorch. An embedding bag can be thought of as a two step process (although this is 
+    on our data set. To begin, we built a fairly simple Embedding Bag model using PyTorch. An embedding bag can be thought of as a two step process (although this is 
     not implemented as a two step process in PyTorch). First, all the sentences in a batch are combined into one long tensor and the tensor is embedded into some 
     n-dimensional space, also known as the embedding dimension, which is chosen by the user. Next, a reduction (mean, min, max, etc.) is applied across the embedded 
     latent dimension and this is passed to a fully connected layer which then produces the predictions. This neural architecture is similar to what would happen if you 
@@ -344,8 +358,8 @@ reasonable. The labels the algorithm learned to predict were as follow:
     we were not able to surpass the accuracy of the simpler logistic regression and embedding bag models. After many epochs we also noticed that the model would begin to overfit and perform very well on the 
     training data while not gaining the same accuracy increases on the validation set.
 
-    While it is possible with more finetuning we would have been able to make slight increases in the model accuracy, we felt the model was limited by the data in 
-    several ways. First, there is such a wide variation in the structure of the texts the words are just as important as the structure, which means that using a LSTM will not significantly increase the 
+    While it is possible that with more finetuning we would have been able to make slight increases in the model accuracy, we felt the model was limited by the data in 
+    several ways. First, there is such a wide variation in the structure of the texts, sometimes the words are just as important as the structure, which means that using a LSTM will not significantly increase the 
     accuracy of the model Additionally, we were working with a fairly small data set, only about 50k records, which impacts the ability of model to learn the data.
     """
 
@@ -359,26 +373,27 @@ with tab_4:
     st.markdown("**Summary**")
     st.write(
     """The objective of training tweet classification models for the purpose of this project is to use them later
-    on a recent tweets, do an automated analysis and be able to answer questions like that:""")
+    on recent tweets collected via the twitter api, simulating a real-tim application. Our objective is to answer the 
+    following questions: """)
     """
     * Is there an active disaster going on?
 
-    * What kind of disaster is going on - like wildfire, earthquake, flood, hurricane?
+    * What kind of disaster is going on - wildfire, earthquake, flood, hurricane?
 
     * What are the affected locations, are some locations connected together?
 
-    * For the active disasters, what categories are the tweets fit in - distress tweets, ask for donations etc.?    
+    * For the active disasters, what categories do the tweets fall in - distress tweets, ask for donations etc.?    
 
     * What are the recommended actions in regard to the disaster?
 
     * What is the disaster intensity over time, what are the peak days?
 
-    * Can we preview the tweets for a particular time and understand better what is going on?"""
+    * Can we preview the tweets for a particular time to better understand what is going on?"""
 
     """
-    The following elaboration explains how we can answer most of these questions.
+    The following section explains how approached answering these questions.
 
-    For the purpose of this effort we have obtained and analyzed tweets for the week between July 31st, 2022
+    For the purpose of this demonstration we have obtained and analyzed tweets for the week between July 31st, 2022
     and August 7th, 2022.
     """
     st.subheader("Obtaining sample tweets by querying the Twitter APIs")
@@ -386,9 +401,7 @@ with tab_4:
     The first step in analyzing the most resent disaster tweets is obtaining them from Twitter. The solution we
     settled on to achieve that is as follows:"""
     """
-    * Using the keyword tokens obtained from the unsupervised topic exploration of the disaster sample, we query the 
-    Twitter API for the past six days (this is max time allowed to go back) and for the tweets up to certain count 
-    (default set to 2000) for every two-hour period. The queries we are using for the respective disasters are:"""
+    * Using the keyword tokens obtained from the unsupervised topic exploration of the disaster sample, we query the Twitter API for the past six days (this is max time allowed to go back) and for the tweets up to certain count (default set to 2000) for every two-hour period. An example of the queries we are using for the respective disasters are:"""
     disaster_table = pd.DataFrame({"Disaster":["Wildfire", "Earthquake", "Flood", "Hurricane"],
                             "Twitter Query": ["wildfire (donate OR (death toll) OR burn OR fire OR forest OR damage)",
                                               "earthquake (pray OR victim OR donate OR rescue OR damage OR magnitude)",
@@ -421,12 +434,12 @@ with tab_4:
     The first question we are trying to answer on the newly obtained dataset is find out if there is an
             active disaster, and what kind it is. For that purpose, we group all the tweets per disaster type and 
             class label, and find the count of the tweets for 8-hour intervals. A sample of the result 
-            dataframe looks like that:"""
+            dataframe looks like this:"""
 
     st.image(os.path.join(loc.blog_data, "grouped_tweets.png"), caption=None)
 
     """
-    When we create a boxplot for the tweets count distribution just by disaster type, we can conclude
+    When we create a boxplot for the tweet frequency distribution by disaster type, we can conclude
             that there is no visible difference in the mean and variance of the samples:"""
 
     st.image(os.path.join(loc.blog_data, "class_distribution.png"), caption=None)
@@ -440,7 +453,7 @@ with tab_4:
     """
     """
     The f-statistic is low and below 10, the p-value is high for the 10% significance, therefore,
-    we cannot reject the null hypothesis that the means of the individual disaster samples are the same.
+    we cannot reject the null hypothesis that the mean frequency of the individual disaster samples are the same.
 
     How about if we filter the tweets for the 'displaced_people_and_evacuations' class label. In
     that case the boxplot chart looks like that:
@@ -537,13 +550,12 @@ with tab_4:
     """
     st.image(os.path.join(loc.blog_data, "past_class_timeline.png"), caption=None)
 
-    st.subheader("Final observations and conclusions")
+    st.subheader("Final Observations and Conclusions")
     """
     We demonstrated how the recent tweets about a particular disaster category can be obtained and 
     analysed both visually and by leveraging statistical tests in order to identify dominant
     active, past and possibly future disasters. We could not accomplish this without the ML
-    models we trained on the labeled dataset, because without using the classification, that new
-    tweet data look pretty uniform and inconclusive. 
+    classification models we trained on the labeled dataset. 
 
     In the next section we will show how we extract the locations of the affected places, and how
     we leverage this info to point out more details and insights for a particular disaster. 
@@ -556,27 +568,27 @@ with tab_5:
     """
     The comparative analysis section explained how the recent disaster tweets were queried and retrieved,
     and then processed for finding a dominant disaster type per class. The following section continues the 
-    exploration with doing a location extraction and interpretation, also shows creative ways for
-    sampling and visualizing tweets based on a selected criteria. The exploration is using [Altair](https://altair-viz.github.io/) 
+    exploration by doing a location extraction and interpretation exercise, along with showing creative ways to
+    sample and visualize tweets based on a specified criteria. The exploration is using the [Altair](https://altair-viz.github.io/) 
     library, which provides interactive features, however, the charts are not visible directly in GitHub.
     For that reason, the produced Jupyter notebooks are exported as PDF files in folder docs/pdfs. Of course,
     you can run the project yourself and play with the generated interactive artifacts.
 
-    Some questions where the focus on this elaboration is are as follows:
+    These are the key questions which will be addressed:
     * What are the affected locations, are some locations connected together?
     * What is the disaster intensity over time, what are the peak days?
     * Can we preview the tweets for a particular time and understand better what is going on?
     """
-    st.subheader("Tweet location extraction")
+    st.subheader("Tweet Location Extraction")
     """
-    For the purposes of disaster analysis, the locations are extracted from the tweet text and not
-    from the associated metadata attributes, and the rational for that is that a relevant tweet is
-    not necessarily posted at the disaster location.
+    For the purpose of this disaster analysis, the locations are extracted from the tweet text and not
+    from the associated metadata attributes. The rational for this is that a relevant tweet is
+    not necessarily posted at the specific disaster location.
 
     We are using [spaCy](https://spacy.io/) library with the xx_ent_wiki_sm pipeline, which is good for
-    finding out locations in text.
+    extracting locations from text.
 
-    Once the extraction process completed, a new column is added to the recent tweet data that contains
+    Once the location extraction process is complete, a new column is added to the recent tweets data that contains
     a list of all locations extracted from the tweet. Therefore, there may be two or more locations in
     the same text:
     """
@@ -591,8 +603,7 @@ with tab_5:
     st.subheader("Disaster tweets interactive exploration")
     """
     The first thing is to do with the updated data is to create an interactive chart that to show us
-    what are the affected locations over time. As expected, California is pretty active, with wildfire
-    tweets mentioning heavily also Utah (with brown line):
+    what are the affected locations over time. As expected, California is very active, followed by Utah (brown line):
     """
     st.image(os.path.join(loc.blog_data, "fire_locations.png"), caption=None)
 
@@ -603,8 +614,8 @@ with tab_5:
     """
     st.image(os.path.join(loc.blog_data, "class_locations_peaks.png"), caption=None)
     """
-    A subsequent interactive visualization allows us to quickly sample the tweets for a selected period
-    and get even better idea and details on what is going on with the particular disaster at that time:
+    A subsequent interactive visualization allows us to quickly sample the tweets for a selected time period
+    and gives an even better idea of what is going on with the particular disaster at that time:
     """
     st.image(os.path.join(loc.blog_data, "fire_tweet_sample.png"), caption=None)
     """
@@ -617,17 +628,17 @@ with tab_5:
     st.image(os.path.join(loc.blog_data, "location_caution_network.png"), caption=None)
     """
     The class "Injured or dead people" interactive location network visualization is even more interesting,
-    because is shows more connections - we can see that the fires in California are most probably
-    affecting also the neighbour state of Oregon, that Klamath National Forest is in California, but also
-    in the Siskiyou County in northern California etc:
+    because is shows more connections - we can see that the fires in California are likely
+    affecting the neighbouring state of Oregon. Additionally, we can see that Klamath National Forest is in California, along with the Siskiyou County 
+    in northern California etc:
     """
     st.image(os.path.join(loc.blog_data, "location_injured_network.png"), caption=None)
     """
     The next visualization shows two completely different locations related to two separate flood
     disasters - one is in the state of Kentucky, the other one is in Pakistan - we can see that two 
     separate networks are getting formed, and we can explore each one of them. We also can see that 
-    the location extraction is not perfect - i.e. we have the work "Helicopter" as a location, most probably
-    because in the tweet is starts with a capital letter:
+    the location extraction is not perfect - i.e. we have the word "Helicopter" as a location, most probably
+    because in the tweet is starts with a capital letter and was mistakenly confused for a proper noun:
     """
     st.image(os.path.join(loc.blog_data, "location_flood_rescue.png"), caption=None)
 
@@ -636,12 +647,10 @@ with tab_5:
     better how are they connected.
     """
 
-    st.subheader("Final observations and conclusions")
+    st.subheader("Final Observations and Conclusions")
     """
-    Interactive visualization can be a powerful tool to provide a deeper understanding of the natural
-    disasters in the world that are going on at a particular time, provide an insight about the affected
-    locations and how are they related and grouped, and also sample the tweets content and get the exact
-    details of what they try to communicate. 
+    Interactive visualization and network diagrams can be a powerful tool to provide a deeper understanding of the currently active natural
+    disasters going on in the world, providing insight into the affected locations and the various disaster response subcategories. 
     """
 
 with tab_6:
@@ -777,26 +786,34 @@ with tab_7:
     st.header(tabs_list[6])
 
     st.subheader("Conclusions and Future Evolution of the System")
-    """
-    With the disaster tweets analysis project we did explore various ML models
-    capable of predicting a label of an individual tweets, determining that the simpler one
-    (Logistic Regression) did as good as the Neural Network one for this multiclass classification. Furthermore,
-    we did an unsupervised topic modeling and extracted topic terms/tokens that we used to
-    query recent disaster tweets, then identified which disaster in a disaster category is 
-    dominant for a particular timeframe and what are the present active disasters. In addition,
-    we extracted the locations from a sample of recent tweets and provided various interactive
-    visualization and relationships between different locations, and also collected and showed
-    different actions as recommended by the tweet authors. In essence, we build a system
-    that can build and present a quite accurate picture of what is going on in the world in terms
-    of natural disasters based on the dynamics of the tweet info.
 
+    """As part of this disaster tweets analysis project we explored various ML models
+    capable of predicting class labels of individual tweets, determining that the Logistic Regression model did just as good
+     if not better than the the Neural Network model for this multiclass classification problem. Furthermore,
+    we performed an unsupervised topic modeling analysis and extracted topic keywords that we used to
+    query recent disaster tweets. With these collected tweets we then simulated a real time analysis, by identifying
+    which disaster is dominant for a particular timeframe along with identifying the current active disasters. In addition,
+    we extracted the locations from the sample of recent tweets and provided various interactive
+    visualizations showing the relationships between different locations. Lastly, we demonstrated that we can extract 
+    the recommended actions from a corpus of disaster tweets. In essence, we built a system
+    that can filter the twitter fire house and present an accurate picture of historical and current natural disasters 
+    occuring in the world, along with providing actionable information to those in need of timely and reliable 
+    information.
+    """
+    """
     Some possible ways this system can evolve in the future: 
-    * **Building a batch or a near-realtime system** that pulls the tweets from the past hour and analyses them, publishing a report with the result. This will allow someone to follow up daily of what is going on in the world.
-    * **Collecting and interpreting the disaster information over longer period of time** - like months and years. Unfortunately Twitter limits how far back in time you can go through the APIs and obtain the relevant info. Therefore, some additional storage needs to be added, so the long-term data are available for additional analysis and insights. 
-    * **Doing a realtime alerting** when some truly disastrous/important happen with location details and other info
-    * **Adding a multilingual support** - presently the system interprets tweets just in English, and as a result it may be missing important information for locations and countries that use different languages.
-    * **Extracting other Twitter information, not just for disasters**, but for other scenarios: geo-political, stock market, energy prices, government actions etc. 
-    * **Interpreting information not just from tweets, but other news sources** - theoretically other NLP sources are not that different as compared to the tweets. So they can be used as a complimentary or a primary source of the required information.
+    * **Building a batch or a near-realtime system** that pulls the tweets from the past hour and analyses them, 
+    publishing a report with the result. This will allow someone to follow up daily of what is going on in the world.
+    * **Collecting and interpreting the disaster information over longer period of time** - like months and years. 
+    Unfortunately Twitter limits how far back in time you can go through the APIs and obtain the relevant info. 
+    Therefore, some additional storage needs to be added, so the long-term data is available for additional analysis and insights. 
+    * **Doing a realtime alerting** when some truly disastrous/important event happens with location details and other pertinent info
+    * **Adding a multilingual support** - presently the system interprets tweets just in English, and as a result it 
+    may be missing important information for locations and countries that use different languages.
+    * **Extracting other Twitter information, not just for disasters**, but for other scenarios: geo-political, stock 
+    market, energy prices, government actions etc. 
+    * **Interpreting information not just from tweets, but other news sources** - theoretically other NLP sources are 
+    not that different as compared to the tweets. So they can be used as a complimentary or a primary source of the required information.
     """
 
 with tab_8:
