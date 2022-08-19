@@ -373,7 +373,7 @@ with tab_4:
     st.markdown("**Summary**")
     st.write(
     """The objective of training tweet classification models for the purpose of this project is to use them later
-    on recent tweets collected via the twitter api, simulating a real-tim application. Our objective is to answer the 
+    on recent tweets collected via the twitter api, simulating a real-time application. Our objective is to answer the 
     following questions: """)
     """
     * Is there an active disaster going on?
