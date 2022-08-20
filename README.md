@@ -2,8 +2,8 @@
 
 ## Overview
 The Disaster Tweets Pipeline Project does apply statistical analysis and machine learning techniques
-using a labeled set of disaster tweets, and leverages the models to process a new set or recent tweets and 
-answer questions like:
+using a labeled set of natural disaster tweets (wildfire, flood, hurricane, earthquake), and leverages the
+models to process a new set or recent tweets answering questions like:
 - Is there a disaster going on?
 - What type of disaster it is?
 - What are the affected locations?
