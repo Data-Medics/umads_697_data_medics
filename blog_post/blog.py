@@ -390,10 +390,9 @@ reasonable. The labels the algorithm learned to predict were as follow:
 with tab_4:
     st.header(tabs_list[3])
     st.subheader("Overview")
-    st.write(
-    """The objective of training tweet classification models for the purpose of this project is to use them later
-    on recent tweets collected via the twitter api, simulating a real-time application. Our objective is to answer the 
-    following questions: """)
+    """
+    The objective of training tweet classification models for the purpose of this project is to use them later on a recent tweets, do an automated analysis and be able to answer questions 
+    like that:"""
     """
     * Is there an active disaster going on?
 
@@ -420,7 +419,8 @@ with tab_4:
     The first step in analyzing the most resent disaster tweets is obtaining them from Twitter. The solution we
     settled on to achieve that is as follows:"""
     """
-    * Using the keyword tokens obtained from the unsupervised topic exploration of the disaster sample, we query the Twitter API for the past six days (this is max time allowed to go back) and for the tweets up to certain count (default set to 2000) for every two-hour period. An example of the queries we are using for the respective disasters are:"""
+    * Using the keyword tokens obtained from the unsupervised topic exploration of the disaster sample, we query the Twitter API for the past six days (this is max time allowed to go back) 
+    and for the tweets up to certain count (default set to 2000) for every two-hour period. An example of the queries we are using for the respective disasters are:"""
     disaster_table = pd.DataFrame({"Disaster":["Wildfire", "Earthquake", "Flood", "Hurricane"],
                             "Twitter Query": ["wildfire (donate OR (death toll) OR burn OR fire OR forest OR damage)",
                                               "earthquake (pray OR victim OR donate OR rescue OR damage OR magnitude)",
@@ -458,8 +458,9 @@ with tab_4:
     st.image(os.path.join(loc.blog_data, "grouped_tweets.png"), caption=None)
 
     """
-    When we create a boxplot for the tweet frequency distribution by disaster type, we can conclude
-            that there is no visible difference in the mean and variance of the samples:"""
+    When we create a boxplot for the tweets count distribution just by disaster type, we can conclude
+    that there is no visible difference in the mean and variance of the samples:
+    """
 
     st.image(os.path.join(loc.blog_data, "class_distribution.png"), caption=None)
 
