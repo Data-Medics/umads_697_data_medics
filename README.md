@@ -1,27 +1,49 @@
-# umads_697_data_medics
+# Disaster Tweets Pipeline Project
+
+## Overview
+The Disaster Tweets Pipeline Project does apply statistical analysis and machine learning techniques
+using a labeled set of disaster tweets, and leverages the models to process a new set or recent tweets and 
+answer questions like:
+- Is there a disaster going on?
+- What type of disaster it is?
+- What are the affected locations?
+- What are the recommended actions per the organizations that handle the disasters
+
+In addition, the project provides an interactive visualization of the disaster intensity over time, and allows
+a user to obtain additional insights.
+
+The project also does an extensive elaboration on the supervised and unsupervised(topic modeling) process
+used to train, tune and compare the models.
+
+## Documentation
+An elaboration on the exploratory details and results of the project can be found in our 
+[Streamlit app](https://data-medics-umads-697-data-medics-blog-postblog-a49khp.streamlitapp.com/) and in
+the [docs](https://github.com/Data-Medics/umads_697_data_medics/blob/main/docs/README.md) folder of this
+repository. [Streamlit app](https://data-medics-umads-697-data-medics-blog-postblog-a49khp.streamlitapp.com/)
+supports some interactive features and is the recommended place to start.
 
 ## Project organization
 The exploration is leveraging a tool called [Ploomber](https://ploomber.readthedocs.io/en/latest/) for building ML pipelines.
-The project code and results are in the folder "pipeline" - it contains the pipeline configuration (pipeline.yaml) and 
+The project code and results are in the folder [pipeline](https://github.com/Data-Medics/umads_697_data_medics/tree/main/pipeline) -
+ it contains the configuration ([pipeline.yaml](https://github.com/Data-Medics/umads_697_data_medics/blob/main/pipeline/pipeline.yaml)) and 
 the task logic in the respective *.py files. The "data" folder contains the files used for the 
-exploration, and the "output" folder - the results of the pipeline execution as Jupyter notebooks and *.csv files. 
-If you run Jupyter locally, you can navigate to the "output" folder and inspect the outcome without running the pipeline.
+exploration, and the "output" folder - the results of the pipeline execution as Jupyter notebooks and *.csv files once
+the processing pipeline gets executed. 
 
-Running all the tasks may take a long time - like a day or more. The command for executing that is:
+Running all the tasks may take a long time - like a couple of hours. The command for executing that is:
 ```buildoutcfg
 cd pipeline
 ploomber build
 ```
-You can also run just a specific task, i.e. the following produces the best result with about 73%
-accuracy, and it is intentionally made independent of the other tasks. It takes about 3 hours to complete
-on a Mac with 16Gb of RAM and 8-core CPU:
+You can also run just a specific pipeline task, it will execute the selected task and also all the dependent steps
+that have not been executed yet. I.e. the following can take an hour to complete on a Mac with 16Gb of RAM
+and 8-core CPU:
 ```buildoutcfg
-ploomber task supervised_computed_features
+ploomber task tweets_timeline_fire
 ```
-This will recreate the files _supervised_computed_features.ipynb_ and _supervised_computed_features.csv_
-in the output folder.
+This will recreate the files _tweets_timeline_fire.ipynb_ in the output folder.
 
-## Setup
+## Project Setup
 
 ### Get the project
 
@@ -45,6 +67,8 @@ Enter into poetry shell. With the shell you can run ploomner, or a Jupyter noteb
 $ poetry shell
 ```
 
+You also have to run the following command 
+
 ## Getting the data
 Use the following [Google Drive location](https://drive.google.com/file/d/1pNMVhe1eXrm85SS6uyJkq8XVhF4Uqz2i/view) to obtain the data file.
 Once you do, copy it to a folder <umads_697_data_medics project toot>/data. Execute the following commands:
@@ -62,65 +86,10 @@ data
 ```
 
 ## Running Jupyter Notebooks
+You may want to inspect and run the generated Jupyter notebooks or use the interactive charts. In that case,
+you have to run Jupyter and navigate to the output folder to preview the outcome. Use the following
+command from the "pipeline" project folder:
+
 ```buildoutcfg
 jupyter notebook .
 ```
-
-## Pipeline processing logic
-The pipelines executed with 'ploomber build" from the 'pipeline' folder perform the following:
-- Vectorizing the tweets 
-  - TF/IDF sparse vectors with bigrams
-    - Add stemming, better stop words removal
-  - Word embedding dense vectors with Word2vec
-- Predicting the class labels from the tweet payload
-  - Implemented basic linear regression
-    - Achieved F1 score of 0.71 using TF/IDF vectors with bigrams
-    - Word embedding dense vectors produced F1 of 0.63
-  - Implement other algorithms (Random Forest, XGBoost, MultinomialNB, Voting Classifier), see if they improve the score
-  - Implement a Neural Network see if it improves the score
-- Predicting the disaster types from the tweet payload
-  - Implemented basic linear regression
-    - Achieved F1 score of 0.95 using TF/IDF vectors with bigrams
-- Predict if a tweets is a disaster/nom-disaster tweet, leverage the category labels for that
-- Do a topic modeling based on the tweets (elaborate)
-- Obtain a sample of the recent disaster-related tweets (past one week) using the topic keywords: 
-    - TODO: Identifying what disasters are going in the world, what is the intensity, are there some dominant disasters
-    - Visualizing the locations of the tweets on the world map, showing where the disasters are happening based on a tweet stream
-    - Categorizing the tweets for a disaster - i.e. caution and advise, infrastructure damage, resque effort 
-    - Visualizing the locations affected, what locations are connected, what category they belong to
-    - Visualizing how the disasters for the top progress over time, when is the peaks, how the categories change
-- TODO: Explaining why the tweet is predicted as a label, what words contributed for that
-- TODO: Aggregate and explain what features are contributing for the class predictions 
-- Extract the actions to be performed when a disaster is going on:
-  - Extract the names of the organizations that deal with the disasters
-  - TODO: Extract the actions these organizations recommend/advise (the verbs)
-  - TODO: Extract the respective objects for these actions (i.e. destinations etc)
-
-## The complete functionality to be delivered (TODO)
-- Produce and train the following:
-  - Vectorizer that converts the tweet body to matrix/vectors
-  - Classifiers that predict the following:
-    - If this is a disaster tweet or not
-    - What class is this tweet
-    - What disaster type is this tweet about
-  - Location extractor that identifies the main locations mentioned in a body of tweets
-  - Organizations and the main actions from them as found in a body of tweets
-- Extract a body of tweets by querying Tweeter APIs
-- Apply the above classifiers on this body answering the following:
-  - Is there a disaster going on?
-  - What type of disaster it is?
-  - What are the affected locations?
-  - What are the recommended actions per the organizations that handle the disasters
-  - Visualize the disaster intensity over time
-- If time permits, load the data in [Streamlit](https://streamlit.io/), make the above analysis as an online app running there
-
-## Workflow pipeline
-- Tweets Vectorization
-  - Classification on categories 
-  - Classification on disaster/non-disaster tweet
-  - Neural Network classification on categories
-  - Words importance
-  - Topic Modeling
-    - Recent tweets retrieval
-    - Recent tweets analysis - affected locations, visualizations, recommended actions
-      - Streamlit local run and deployment
