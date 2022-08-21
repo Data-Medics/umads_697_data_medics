@@ -57,7 +57,7 @@ with tab_1:
     st.subheader("Overview")
     """Quality information is incredibly difficult to obtain following a major natural disaster and finding specific, actionable information can make a huge difference to 
     those affected.  Lots of pertinent information is posted on Twitter following natural disasters but it can be extremely challenging to sift through hundreds of thousands 
-    of tweets for the desired information.  To help solve this problem we built a **one-stop-natural-disaster-information-shop**.  Powered by our machine learning models, 
+    of tweets for the desired information.  To help solve this problem we built a **natural disaster information one-stop-shop**.  Powered by our machine learning models, 
     we make it easy to filter tweets into specific categories based on the information the user is trying to find.  We use natural language processing and topic models 
     to search Twitter for tweets specific to different types of natural disasters.  We provide a wide variety of carefully curated, useful information ranging from 
     geo-spatial analysis to understand the exact locations and severity of the natural disaster to parsing the Twitterverse for actionable behaviors.  
@@ -227,7 +227,7 @@ with tab_2:
     st.write(n_topics_coherence_chart)
     st.subheader("Topic Modeling Results")
 
-    st.markdown("**pyLDAvis**")
+    st.markdown("**The pyLDAvis Library**")
     """
     [pyLDAvis](https://pyldavis.readthedocs.io/en/latest/index.html) is an open source python package for interactive topic modeling visualization.
     
@@ -820,9 +820,11 @@ with tab_8:
     st.subheader("Data & Resources")
     """
     * [Project Code on Github](https://github.com/Data-Medics/umads_697_data_medics)
+    * [Catalog of the Ploomber-generated notebooks used in the project](https://github.com/Data-Medics/umads_697_data_medics/blob/main/docs/explorations_catalog.md)
     * Labeled Twitter Data
         * [CrisisNLP](https://crisisnlp.qcri.org/humaid_dataset.html#)
     * Leveraged Python Libraries
+        * [Ploomber](https://ploomber.io/)
         * [Tweepy](https://www.tweepy.org/)
         * [Spacy](https://spacy.io/)
         * [PyLDA](https://pyldavis.readthedocs.io/en/latest/readme.html)
