@@ -57,7 +57,7 @@ with tab_1:
     st.subheader("Overview")
     """Quality information is incredibly difficult to obtain following a major natural disaster and finding specific, actionable information can make a huge difference to 
     those affected.  Lots of pertinent information is posted on Twitter following natural disasters but it can be extremely challenging to sift through hundreds of thousands 
-    of tweets for the desired information.  To help solve this problem we built a **one-stop-natural-disaster-information-shop**.  Powered by our machine learning models, 
+    of tweets for the desired information.  To help solve this problem we built a **natural disaster information one-stop-shop**.  Powered by our machine learning models, 
     we make it easy to filter tweets into specific categories based on the information the user is trying to find.  We use natural language processing and topic models 
     to search Twitter for tweets specific to different types of natural disasters.  We provide a wide variety of carefully curated, useful information ranging from 
     geo-spatial analysis to understand the exact locations and severity of the natural disaster to parsing the Twitterverse for actionable behaviors.  
@@ -227,7 +227,7 @@ with tab_2:
     st.write(n_topics_coherence_chart)
     st.subheader("Topic Modeling Results")
 
-    st.markdown("**pyLDAvis**")
+    st.markdown("**The pyLDAvis Library**")
     """
     [pyLDAvis](https://pyldavis.readthedocs.io/en/latest/index.html) is an open source python package for interactive topic modeling visualization.
     
@@ -287,76 +287,52 @@ with tab_3:
 
     st.subheader("Overview")
 
-    st.markdown("Traditional Algorithms")
+    """
+    We attempted two kind of classification models on our disaster tweets dataset:
+    """
+    """
+    * **Classifiers that determines if a tweet is a particular disaster (wildfire, flood, hurricane, earthquake, non-disaster)**. We tried retrieving a random tweets sample, and used that as a "non-disaster" label, and then assigned the "disaster" labels to the tweets from the disaster sample. The trained classification algorithms worked very well on the disaster dataset - F1 score above 0.93 for the logistic regression one. However, when we attempted to apply this to a random tweeter sample  most of the predicted labels were coming as "hurricane". Therefore, we did abandon the idea and resorted to leveraging the tokens from the topic modeling combined with a creative twitter search queries.
+    """
+    """
+    * **Classifiers that computes the class label after getting trained on the tweet disaster dataset.** We managed to achieve a macro-F1 score of 0.71 on the test dataset using multi-class classification logistic regression. We applied the algorithm later on ransom sample tweets from the past week, and even we did not have labels there, our observation was that the assigned labels look correct and reasonable. The labels the algorithm learned to predict were as follow:
+      - rescue_volunteering_or_donation_effort
+      - other_relevant_information
+      - requests_or_urgent_needs
+      - injured_or_dead_people
+      - infrastructure_and_utility_damage
+      - sympathy_and_support
+      - caution_and_advice
+      - not_humanitarian
+      - displaced_people_and_evacuations
+      - missing_or_found_people
 
-    st.write("""We attempted two kinds of classification models on our disaster tweets dataset:""")
+    """
+
+    st.subheader("Preprocessing and Vectorization of the Dataset")
+
+    """
+    The first step of the data processing is the vectorization, where we find a proper representation of each tweet. Once vectorized, we tried to compare the effect of each technique by trying out the respective representation on logistic regression model, to see which one yields the best classification result. The main things we attempted were as follows:
+    * Using tweet tokenizer from the nltk library (TweetTokenizer) with TF/IDF vectorization. This produced a sparse matrix that can be used in a ML algorithm. This tokenization when used with logistic regression produced an F1 score of 0.714. The generated notebook is vectorizer.ipynb and can be found in the project output folder
+    * Using the same tokenization and vectorization as above, just with adding an SVD step projecting the the sparse matrix in a lower dimension to produce a more dense matrix. The result was an F1 score of 0.681 and the outcome can be seen in vectorizer_svd.ipynb
+    * Using spaCy library with stemming, stop words removal and again TF/IDF vectorization. This again produced a sparse matrix and when tested with a logistic regression model the F1 score was 0.701. The generated notebook is vectorizer_spacy.ipynb
+    * Word2Vec dense matrix vectorization with gensim library. The F1 result we achieved was 0.591 - probably one of the lowest so far. The respective Jupyter notebook is vectorizer_dense.ipynb.
+    * Count vectorization which ended up being used for the topic modeling effort with generated notebook vectorizer_countVec.ipynb
+    After comparing the results, we ended up using the first vectorization option for our models - tweet tokenizer with TF/IDF from sklearn, since it was producing the best evaluation scores.
+    """
+
+    st.subheader("Traditional Classification Algorithms Selection and Comparison")
+
+    """
+    For the class label classification, we attempted the following algorithms and algorithm combinations:
+    * Linear regression - we achieved the 0.710 average macro F1 score leveraging a Grid search technique.
+    * Random Forest - this algorithm was disappointing for this multiclass scenario with average macro F1 score of 0.207. As a comparison, the dummy classifiers were giving scores from 0.04 to 0.08.
+    * Multinomial NB - the F1 score was 0.569, better than random forest, but worse as compared to the logistic regression.
+    * Voting classifier, where the three algorithms above were voting on the label. The averaged macro F1 score on this one came to 0.689, again, not as good as the logistic regression, but better than the others. We alo tried the Gradient Boosting Classifier, but we have to interrupt it, because it was taking too long to train to be practical.
     
-    st.write("""
-1. **Classifiers that determine if a tweet pertains to a particular disaster (wildfire, flood, hurricane,earthquake, non-disaster).** 
-Initially, we tried retrieving a sample of random tweets to use as a non-disaster related tweets by applying a "non-disaster" label.
-We then assigned the "disaster" label (i.e. wildfire, flood, hurricane, earthquake) to the tweets from our disaster tweets training
-sample. Our thought was that we would then be able to build a binary classification model off of this combined dataset
- to determine if a particular tweet was disaster related or not. While our trained classification algorithms performed 
- very well on the disaster dataset alone - (we achieved an F1 score above 0.93 for the logistic regression model), when 
- we attempted to apply this classifier to the combined labeled dataset, most of the predicted labels for non-disasters 
- were labeled as "hurricane" as opposed to "non-disaster". Therefore, we abandoned this approach and resorted to 
- leveraging the disaster specific keywords from our topic modeling to develop twitter queries.""")
+    There is a following section details are attempts at the more advanced neural network algorithms we tried. However, the results from them were very compatible with the logistic regression one. Therefore, the added complexity did not bring any substantial benefit, and we decided to proceed with the simpler one for the rest of the project effort.
 
-    st.write("""
-2. **Classifiers that compute the class label after getting trained on the disaster tweet dataset.**
-
-We managed to achieve a macro-F1 score of 0.71 on the test dataset using multi-class classification
-logistic regression. We applied the model later to a random sample tweets from the past week,
-and even though we did not have labeled data there, our observation was that the predicted labels looked correct and
-reasonable. The labels the algorithm learned to predict were as follow:
-  - rescue_volunteering_or_donation_effort
-  - other_relevant_information
-  - requests_or_urgent_needs
-  - injured_or_dead_people
-  - infrastructure_and_utility_damage
-  - sympathy_and_support
-  - caution_and_advice
-  - not_humanitarian
-  - displaced_people_and_evacuations
-  - missing_or_found_people
-    """)
-
-    st.markdown("**Preprocessing and Vectorization of the Dataset**")
-
-    st.write("""The first step of the data processing is the vectorization, where we find a proper representation of each
-    tweet. Once vectorized, we tried to compare the effect of each technique by trying out the respective
-    representation on the logistic regression model to see which one yields the best classification result.
-    The main things we attempted were as follows:
-    - Using tweet tokenizer from the nltk library ([TweetTokenizer](https://www.nltk.org/api/nltk.tokenize.casual.html#nltk.tokenize.casual.TweetTokenizer))
-    with TF/IDF vectorization. This produced a sparse matrix that can be used in a ML algorithm. This tokenization
-    when used with logistic regression produced an F1 score of 0.714. The generated notebook is vectorizer.ipynb and can 
-    be found in the project output folder
-    - Using the same tokenization and vectorization as above, but adding an SVD step to project the 
-    sparse matrix to a reduced dimension. The result was an F1 score of 0.681 and
-    the outcome can be seen in vectorizer_svd.ipynb
-    - Using [spaCy](https://spacy.io/) library with stemming, stop words removal and again TF/IDF vectorization.
-    This again produced a sparse matrix and when tested with a logistic regression model the F1 score was 0.701.
-    The generated notebook is vectorizer_spacy.ipynb
-    - Word2Vec dense matrix vectorization with [gensim](https://github.com/RaRe-Technologies/gensim) library.
-    The F1 result we achieved was 0.591 - probably one of the lowest so far. The respective Jupyter notebook 
-    is vectorizer_dense.ipynb. 
-    - Count vectorization which was only used for the LDA topic modeling effort. The generated notebook is called 
-    vectorizer_countVec.ipynb""")
-
-    st.write("""
-    After comparing the results, we ended up using the first vectorization option for our models - tweet tokenizer
-    with TF/IDF from sklearn, since it was producing the best evaluation scores.
-    """)
-
-    st.markdown("**Classification Algorithms Selection and Comparison**")
-
-    st.write("""
-    For the class label classification, we tested the following algorithms and algorithm combinations:""")
-    st.write("- Linear regression - we achieved the 0.710 average macro F1 score leveraging a grid search technique.")
-    st.write("""- Random Forest - this algorithm was disappointing for this multiclass scenario with average macro F1 score of 0.207. As a comparison, the dummy classifiers were giving scores from 0.04 to 0.08.""") 
-    st.write("""- Multinomial NB - the F1 score was 0.569, better than random forest, but worse as compared to the logistic regression.""")
-    st.write("""- Voting classifier, where the three algorithms above were voting on the label. The averaged macro F1 score on this one came to 0.689, again, not as good as the logistic regression, but better than the others.
-    We alo tried the Gradient Boosting Classifier, but we had to interrupt it, because it was taking far too long to train.""")
+    The complete exploration can be found in the category_classification_models.ipynb in the output folder of the project.
+    """
 
     st.subheader("Deep Learning Models")
     """
@@ -844,9 +820,11 @@ with tab_8:
     st.subheader("Data & Resources")
     """
     * [Project Code on Github](https://github.com/Data-Medics/umads_697_data_medics)
+    * [Catalog of the Ploomber-generated notebooks used in the project](https://github.com/Data-Medics/umads_697_data_medics/blob/main/docs/explorations_catalog.md)
     * Labeled Twitter Data
         * [CrisisNLP](https://crisisnlp.qcri.org/humaid_dataset.html#)
     * Leveraged Python Libraries
+        * [Ploomber](https://ploomber.io/)
         * [Tweepy](https://www.tweepy.org/)
         * [Spacy](https://spacy.io/)
         * [PyLDA](https://pyldavis.readthedocs.io/en/latest/readme.html)
