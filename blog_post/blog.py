@@ -308,7 +308,7 @@ with tab_3:
 
     """
 
-    st.subheader("**Preprocessing and Vectorization of the Dataset**")
+    st.subheader("Preprocessing and Vectorization of the Dataset")
 
     """
     The first step of the data processing is the vectorization, where we find a proper representation of each tweet. Once vectorized, we tried to compare the effect of each technique by trying out the respective representation on logistic regression model, to see which one yields the best classification result. The main things we attempted were as follows:
@@ -320,7 +320,7 @@ with tab_3:
     After comparing the results, we ended up using the first vectorization option for our models - tweet tokenizer with TF/IDF from sklearn, since it was producing the best evaluation scores.
     """
 
-    st.subheader("**Classification Algorithms Selection and Comparison**")
+    st.subheader("Traditional Classification Algorithms Selection and Comparison")
 
     """
     For the class label classification, we attempted the following algorithms and algorithm combinations:
