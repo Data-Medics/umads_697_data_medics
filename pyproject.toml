@@ -2,7 +2,7 @@
 name = "data-medics-capstone"
 version = "0.0.1"
 description = ""
-authors = ["jtzupan@umich.edu", "rjgillin@umich.edu", "mbouss@umich.edu"]
+authors = ["jtzupan <jtzupan@umich.edu>", " rjgillin <rjgillin@umich.edu>", "mboussarov <mbouss@umich.edu>"]
 packages = [{ include = "pipeline" },]
 
 [tool.poetry.dependencies]
